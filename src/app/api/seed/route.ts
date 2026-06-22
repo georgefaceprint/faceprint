@@ -17,14 +17,14 @@ export async function GET() {
 
     for (const s of staff) {
       await prisma.user.upsert({
-        where: { phone: s.phone },
+        where: { email: `${s.firstName.toLowerCase()}@faceprint.local` },
         update: {},
         create: {
           firstName: s.firstName,
           lastName: s.lastName,
           phone: s.phone,
           email: `${s.firstName.toLowerCase()}@faceprint.local`,
-          role: s.role,
+          role: s.role as any,
           passwordHash: '',
           passcodeSetup: false,
         }

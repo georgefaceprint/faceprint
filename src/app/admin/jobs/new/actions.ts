@@ -42,13 +42,14 @@ export async function createQuote(formData: FormData) {
       salesRepId: session.user.name || 'System',
       description,
       totalAmount,
-      balanceDue: totalAmount,
+      balance: totalAmount,
       clientId,
       items: {
         create: {
           description: `${productName} - ${itemDescription}`,
           quantity,
           unitPrice: unitCost,
+          totalPrice: totalAmount,
         }
       }
     }
