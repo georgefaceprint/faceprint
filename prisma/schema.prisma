@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
@@ -20,8 +21,10 @@ enum Role {
 
 model User {
   id            String    @id @default(uuid())
-  email         String    @unique
+  email         String?   @unique
+  phone         String?   @unique
   passwordHash  String
+  passcodeSetup Boolean   @default(false)
   role          Role      @default(CUSTOMER)
   firstName     String?
   lastName      String?
@@ -55,6 +58,7 @@ model Client {
   user          User?     @relation("ClientOwner", fields: [userId], references: [id])
   
   jobs          Job[]
+  quoteRequests QuoteRequest[]
 }
 
 // ----------------------------------------------------------------------------
@@ -71,8 +75,9 @@ model Product {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  category      Category? @relation(fields: [categoryId], references: [id])
-  jobItems      JobItem[]
+  category          Category?          @relation(fields: [categoryId], references: [id])
+  jobItems          JobItem[]
+  quoteRequestItems QuoteRequestItem[]
 }
 
 model Category {
@@ -115,6 +120,7 @@ model Job {
   client        Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   salesRep      User?     @relation("SalesJobs", fields: [salesRepId], references: [id])
   items         JobItem[]
+  quoteRequest  QuoteRequest?
 }
 
 model JobItem {
@@ -128,4 +134,43 @@ model JobItem {
 
   job           Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
   product       Product?  @relation(fields: [productId], references: [id])
+}
+
+// ----------------------------------------------------------------------------
+// Storefront (Quote Requests & Orders)
+// ----------------------------------------------------------------------------
+enum QuoteRequestStatus {
+  PENDING
+  REVIEWING
+  QUOTED
+  CONVERTED
+  REJECTED
+}
+
+model QuoteRequest {
+  id            String             @id @default(uuid())
+  clientId      String?
+  guestName     String?
+  guestEmail    String?
+  guestPhone    String?
+  details       String             // Message from customer
+  status        QuoteRequestStatus @default(PENDING)
+  jobId         String?            @unique // Links to the Job once converted
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  client        Client?            @relation(fields: [clientId], references: [id])
+  job           Job?               @relation(fields: [jobId], references: [id])
+  items         QuoteRequestItem[]
+}
+
+model QuoteRequestItem {
+  id              String        @id @default(uuid())
+  quoteRequestId  String
+  productId       String?
+  description     String?
+  quantity        Int           @default(1)
+
+  quoteRequest    QuoteRequest  @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  product         Product?      @relation(fields: [productId], references: [id])
 }

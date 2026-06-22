@@ -76,6 +76,15 @@ async function main() {
     }
 
     try {
+      // Check if job already exists
+      const existingJob = await prisma.job.findUnique({
+        where: { legacyId: String(oldJob.ID) }
+      });
+      if (existingJob) {
+        skippedCount++;
+        continue;
+      }
+
       // Build the line items
       const items = [];
       for (let i = 1; i <= 8; i++) {

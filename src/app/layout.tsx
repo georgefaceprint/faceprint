@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const outfit = Outfit({
   subsets: ["latin"],
+  variable: "--font-outfit",
 });
 
 export const metadata: Metadata = {
-  title: "FacePrint | ERP & Shop",
-  description: "FacePrint E-commerce and ERP system",
+  title: "FacePrint ERP & E-commerce",
+  description: "Modernizing the backend operations and consumer frontend for FacePrint.",
 };
 
 export default function RootLayout({
@@ -18,8 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable}`}>
-      <body>{children}</body>
+    <html lang="en">
+      <body className={`${outfit.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
