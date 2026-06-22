@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------------------------------
+// Users & Roles
+// ----------------------------------------------------------------------------
+enum Role {
+  ADMIN
+  SALES
+  CUSTOMER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(CUSTOMER)
+  firstName     String?
+  lastName      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  jobs          Job[]     @relation("SalesJobs")
+  clients       Client[]  @relation("ClientOwner")
+}
+
+// ----------------------------------------------------------------------------
+// Clients (B2B/B2C)
+// ----------------------------------------------------------------------------
+model Client {
+  id            String    @id @default(uuid())
+  legacyId      String?   @unique
+  companyName   String?
+  contactName   String
+  email         String    @unique
+  phone         String?
+  vatNumber     String?
+  addressLine1  String?
+  addressLine2  String?
+  city          String?
+  state         String?
+  postalCode    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userId        String?
+  user          User?     @relation("ClientOwner", fields: [userId], references: [id])
+  
+  jobs          Job[]
+}
+
+// ----------------------------------------------------------------------------
+// Products & Inventory
+// ----------------------------------------------------------------------------
+model Product {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  basePrice     Float
+  sku           String    @unique
+  imageUrl      String?
+  categoryId    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  category      Category? @relation(fields: [categoryId], references: [id])
+  jobItems      JobItem[]
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  description   String?
+  products      Product[]
+}
+
+// ----------------------------------------------------------------------------
+// Jobs (Unified Quotes/Invoices/Jobcards)
+// ----------------------------------------------------------------------------
+enum JobStatus {
+  PENDING
+  QUOTED
+  INVOICED
+  IN_PRODUCTION
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+model Job {
+  id            String    @id @default(uuid())
+  legacyId      String?   @unique
+  jobNumber     String?   @unique
+  clientId      String
+  salesRepId    String?
+  status        JobStatus @default(PENDING)
+  priority      String?   // Mapping for the old PRI field (e.g. HOT, WARM)
+  totalAmount   Float     @default(0)
+  amountPaid    Float     @default(0)
+  balance       Float     @default(0)
+  description   String?
+  notes         String?
+  dueDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  client        Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  salesRep      User?     @relation("SalesJobs", fields: [salesRepId], references: [id])
+  items         JobItem[]
+}
+
+model JobItem {
+  id            String    @id @default(uuid())
+  jobId         String
+  productId     String?
+  description   String
+  quantity      Int
+  unitPrice     Float
+  totalPrice    Float
+
+  job           Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  product       Product?  @relation(fields: [productId], references: [id])
+}
