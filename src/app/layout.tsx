@@ -3,13 +3,13 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
-  subsets: ["latin"],
   variable: "--font-outfit",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "FacePrint ERP & E-commerce",
-  description: "Modernizing the backend operations and consumer frontend for FacePrint.",
+  title: "FacePrint | The Banner Factory",
+  description: "24Hr | Same day Printing | Best Prices Guaranteed",
 };
 
 export default function RootLayout({

@@ -1,0 +1,121 @@
+.section {
+  padding: 8rem 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: var(--animate-fade-in);
+}
+
+.title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  animation: var(--animate-fade-in);
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+@media (min-width: 768px) {
+  .contentWrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.textContent {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+
+.textContent p {
+  margin-bottom: 1.5rem;
+}
+
+.textContent h2 {
+  color: var(--color-text-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.statCard {
+  padding: 2rem;
+  text-align: center;
+  border-radius: var(--radius-2xl);
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.statValue {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.leadersSection {
+  margin-top: 6rem;
+  text-align: center;
+}
+
+.leadersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.leaderCard {
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+}
+
+.leaderAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--color-border);
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.leaderName {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.leaderRole {
+  color: var(--color-secondary);
+  font-size: 0.9rem;
+}
