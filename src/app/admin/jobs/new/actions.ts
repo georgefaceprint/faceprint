@@ -46,8 +46,7 @@ export async function createQuote(formData: FormData) {
       clientId,
       items: {
         create: {
-          name: productName,
-          description: itemDescription,
+          description: `${productName} - ${itemDescription}`,
           quantity,
           unitPrice: unitCost,
         }

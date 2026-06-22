@@ -35,7 +35,6 @@ export default async function QuoteViewer({ params }: { params: { id: string } }
         <div className="space-x-4">
           <button 
             className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-lg"
-            onClick="window.print()" // Note: we'll convert this button to a client component below or just use a small inline script
           >
             <span className="hidden">Print</span>
           </button>
@@ -81,7 +80,7 @@ export default async function QuoteViewer({ params }: { params: { id: string } }
           <tbody>
             {job.items.map((item, index) => (
               <tr key={index} className="border-b border-dashed border-gray-300">
-                <td className="py-3 uppercase pr-4">{item.name}</td>
+                <td className="py-3 uppercase pr-4">{item.description}</td>
                 <td className="py-3">{item.quantity}</td>
                 <td className="py-3">{item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                 <td className="py-3">{(item.unitPrice * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
