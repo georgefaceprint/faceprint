@@ -83,7 +83,7 @@ export default async function ClientsDirectory({
                 </tr>
               ) : (
                 clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                  <tr key={client.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group cursor-pointer" onClick={() => {}}>
                     <td className="px-6 py-4">
                       <div className="font-medium text-white">{client.companyName || client.contactName}</div>
                       {client.companyName && <div className="text-xs text-gray-500">{client.contactName}</div>}
@@ -102,9 +102,9 @@ export default async function ClientsDirectory({
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-purple-400 hover:text-purple-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Link href={`/admin/clients/${client.id}`} className="text-purple-400 hover:text-purple-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                         View Profile &rarr;
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))

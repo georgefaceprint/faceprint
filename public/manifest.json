@@ -1,0 +1,21 @@
+{
+  "name": "FacePrint ERP & Storefront",
+  "short_name": "FacePrint",
+  "description": "FacePrint ERP system and public storefront for 24Hr Banners and Printing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
+  "icons": [
+    {
+      "src": "/logo-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
