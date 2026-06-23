@@ -2,16 +2,6 @@ import Link from 'next/link';
 import styles from './about.module.css';
 
 export default function AboutUs() {
-  const leaders = [
-    { name: "Robert Downey", role: "CEO Founder" },
-    { name: "Nikki Gooley", role: "Jr. CEO Founder" },
-    { name: "Laurence Fishburne", role: "HR" },
-    { name: "Jean Reno", role: "Expert" },
-    { name: "Robert John", role: "Expert" },
-    { name: "Bel McClory", role: "Manager" },
-    { name: "Glorio Foster", role: "Adviser" }
-  ];
-
   return (
     <div className="min-h-screen relative">
       {/* Navigation Bar */}
@@ -88,18 +78,6 @@ export default function AboutUs() {
           </div>
         </div>
 
-        <div className={styles.leadersSection}>
-          <h2 className={styles.title}>Meet Our <span className="text-gradient">Leaders</span></h2>
-          <div className={styles.leadersGrid}>
-            {leaders.map((leader, i) => (
-              <div key={i} className={`glass-panel ${styles.leaderCard}`}>
-                <div className={styles.leaderAvatar}>{leader.name[0]}</div>
-                <div className={styles.leaderName}>{leader.name}</div>
-                <div className={styles.leaderRole}>{leader.role}</div>
-              </div>
-            ))}
-          </div>
-        </div>
       </main>
     </div>
   );

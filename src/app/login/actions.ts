@@ -15,9 +15,26 @@ export async function checkSetupStatus(phone: string) {
 
 export async function setupPasscode(phone: string, passcode: string) {
   const passwordHash = await bcrypt.hash(passcode, 10);
-  await prisma.user.update({
+  
+  // Need to map the phone to the user's name to ensure we create them correctly if they don't exist
+  const profiles: Record<string, any> = {
+    '0820000001': { firstName: 'George', role: 'ADMIN' },
+    '0820000002': { firstName: 'Tanya', role: 'SALES' },
+    '0820000003': { firstName: 'Cherine', role: 'SALES' }
+  };
+  
+  const profile = profiles[phone] || { firstName: 'Staff', role: 'SALES' };
+
+  await prisma.user.upsert({
     where: { phone },
-    data: {
+    update: {
+      passwordHash,
+      passcodeSetup: true
+    },
+    create: {
+      phone,
+      firstName: profile.firstName,
+      role: profile.role,
       passwordHash,
       passcodeSetup: true
     }

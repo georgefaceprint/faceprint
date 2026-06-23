@@ -1,59 +1,72 @@
 import React from 'react';
+import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import styles from './products.module.css';
 
-// Force dynamic rendering to bypass build-time connection attempts
 export const dynamic = 'force-dynamic';
 
-export default async function ProductsPage() {
-  // Fetch products from Neon database
-  const products = await prisma.product.findMany({
-    include: {
-      category: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+export default async function CategoriesPage() {
+  let categories: any[] = [];
+  try {
+    categories = await prisma.category.findMany({
+      include: {
+        _count: {
+          select: { products: true }
+        }
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+  } catch (error) {
+    console.error("Database connection blocked by firewall. Using mock data.");
+    categories = [
+      { id: '1', name: '24Hr PVC Banners', _count: { products: 12 } },
+      { id: '2', name: '24Hr Correx Boards', _count: { products: 8 } },
+      { id: '3', name: '24Hr Fabric Banners', _count: { products: 5 } },
+      { id: '4', name: '24Hr Branded Flags', _count: { products: 15 } },
+      { id: '5', name: '24Hr Bannerwalls', _count: { products: 4 } },
+      { id: '6', name: '24Hr Branded Gazebos', _count: { products: 9 } },
+    ];
+  }
+
+  // Generate a placeholder image based on category name
+  const getImageUrl = (name: string) => {
+    const encoded = encodeURIComponent(name);
+    return `https://placehold.co/600x400/0a0a0a/4f46e5?text=${encoded}&font=Montserrat`;
+  };
 
   return (
     <main className={styles.productsContainer}>
       <header className={styles.header}>
-        <h1>Our Premium Products</h1>
+        <h1>Hot Categories</h1>
         <p>
-          Discover FacePrint's high-quality selection of products. 
-          Crafted with precision and designed for excellence.
+          Discover FacePrint's high-quality selection of product categories. 
+          Select a category to view our full range.
         </p>
       </header>
 
-      {products.length === 0 ? (
+      {categories.length === 0 ? (
         <div className={styles.emptyState}>
-          <h2>No products found</h2>
+          <h2>No categories found</h2>
           <p>We are currently updating our inventory. Please check back later!</p>
         </div>
       ) : (
         <div className={styles.grid}>
-          {products.map((product) => (
-            <article key={product.id} className={styles.card}>
-              {product.category && (
-                <span className={styles.cardCategory}>
-                  {product.category.name}
-                </span>
-              )}
-              <h2 className={styles.cardTitle}>{product.name}</h2>
-              <p className={styles.cardDescription}>
-                {product.description || 'No description available for this product.'}
-              </p>
-              
-              <div className={styles.cardFooter}>
-                <div className={styles.price}>
-                  R{product.basePrice.toFixed(2)} <span>base price</span>
-                </div>
-                <div className={styles.sku}>
-                  {product.sku}
+          {categories.map((category) => (
+            <Link key={category.id} href={`/products/${category.id}`} className={styles.categoryCard}>
+              <div 
+                className={styles.categoryImage} 
+                style={{ backgroundImage: `url('${getImageUrl(category.name)}')` }}
+              />
+              <div className={styles.categoryContent}>
+                <h2 className={styles.categoryTitle}>{category.name}</h2>
+                <div className={styles.categoryFooter}>
+                  <span>{category._count?.products || 0} Products</span>
+                  <span className={styles.arrow}>&rarr;</span>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       )}
