@@ -14,9 +14,10 @@ const STATUS_BADGE: Record<string, { bg: string; text: string; label: string }> 
   CANCELLED:     { bg: 'bg-red-500/20',    text: 'text-red-400',    label: 'Cancelled' },
 };
 
-export default async function ClientProfile({ params }: { params: { id: string } }) {
+export default async function ClientProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const client = await prisma.client.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       jobs: {
         orderBy: { createdAt: 'desc' },

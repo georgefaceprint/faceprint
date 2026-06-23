@@ -13,13 +13,16 @@ const STATUS_BADGE: Record<string, { bg: string; text: string }> = {
   CANCELLED:     { bg: 'bg-red-500/20',    text: 'text-red-400'    },
 };
 
-export default async function DailyReport({
+export default async function DailyReportPage({
   searchParams,
 }: {
-  searchParams: { date?: string };
+  searchParams: Promise<{ date?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
+  const session = await auth();
+
   // Default to today, allow overriding via ?date=YYYY-MM-DD
-  const targetDateStr = searchParams?.date || new Date().toISOString().split('T')[0];
+  const targetDateStr = resolvedSearchParams?.date || new Date().toISOString().split('T')[0];
   const targetDate = new Date(targetDateStr);
   targetDate.setHours(0, 0, 0, 0);
   const nextDay = new Date(targetDate);

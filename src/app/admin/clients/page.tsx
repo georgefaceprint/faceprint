@@ -6,10 +6,11 @@ export const dynamic = 'force-dynamic';
 export default async function ClientsDirectory({
   searchParams,
 }: {
-  searchParams: { q?: string; page?: string };
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const query = searchParams?.q || '';
-  const currentPage = Number(searchParams?.page) || 1;
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams?.q || '';
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
   const take = 20;
   const skip = (currentPage - 1) * take;
 
