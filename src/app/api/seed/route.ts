@@ -15,21 +15,21 @@ export async function GET() {
       { firstName: 'Cherine', lastName: '', phone: '0820000003', role: 'ADMIN' },
     ];
 
-    for (const s of staff) {
-      await prisma.user.upsert({
-        where: { email: `${s.firstName.toLowerCase()}@faceprint.local` },
-        update: {},
-        create: {
-          firstName: s.firstName,
-          lastName: s.lastName,
-          phone: s.phone,
-          email: `${s.firstName.toLowerCase()}@faceprint.local`,
-          role: s.role as any,
-          passwordHash: '',
-          passcodeSetup: false,
-        }
-      });
-    }
+    // for (const s of staff) {
+    //   await prisma.user.upsert({
+    //     where: { email: `${s.firstName.toLowerCase()}@faceprint.local` },
+    //     update: {},
+    //     create: {
+    //       firstName: s.firstName,
+    //       lastName: s.lastName,
+    //       phone: s.phone,
+    //       email: `${s.firstName.toLowerCase()}@faceprint.local`,
+    //       role: s.role as any,
+    //       passwordHash: '',
+    //       passcodeSetup: false,
+    //     }
+    //   });
+    // }
 
     // 2. Import Products
     const xmlPath = path.join(process.cwd(), 'products.xml');
@@ -134,7 +134,7 @@ export async function GET() {
         importedProducts: count 
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message, code: e.code, name: e.name }, { status: 500 });
   }
 }
