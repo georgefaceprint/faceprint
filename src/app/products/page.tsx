@@ -2,8 +2,8 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import styles from './products.module.css';
 
-// Force dynamic rendering if necessary, but revalidate is better for storefronts
-export const revalidate = 60; // revalidate every 60 seconds
+// Force dynamic rendering to bypass build-time connection attempts
+export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
   // Fetch products from Neon database
