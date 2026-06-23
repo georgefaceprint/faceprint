@@ -4,33 +4,7 @@ import styles from './about.module.css';
 export default function AboutUs() {
   return (
     <div className="min-h-screen relative">
-      {/* Navigation Bar */}
-      <header className="glass-panel fixed top-0 w-full z-50 rounded-none border-t-0 border-x-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center font-bold text-xl shadow-lg text-white">
-              F
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-white">FacePrint</span>
-          </div>
-          
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-300 hover:text-white transition-colors font-medium">Home</Link>
-            <Link href="/about" className="text-white hover:text-white transition-colors font-medium">About Us</Link>
-            <Link href="/faq" className="text-gray-300 hover:text-white transition-colors font-medium">FAQs</Link>
-            <Link href="/contact" className="text-gray-300 hover:text-white transition-colors font-medium">Contact</Link>
-          </nav>
 
-          <div className="flex items-center space-x-4">
-            <Link 
-              href="/login" 
-              className="hidden md:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-            >
-              Staff Login
-            </Link>
-          </div>
-        </div>
-      </header>
 
       <main className={styles.section}>
         <div className={styles.header}>
