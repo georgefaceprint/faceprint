@@ -11,7 +11,7 @@ export default async function NewQuotePage({ searchParams }: { searchParams: Pro
   const [lockedClient, products] = await Promise.all([
     params.clientId ? prisma.client.findUnique({
       where: { id: params.clientId },
-      select: { id: true, companyName: true, contactName: true, legacyId: true },
+      select: { id: true, companyName: true, contactName: true, legacyId: true, vatNumber: true },
     }) : null,
     prisma.product.findMany({
       take: 2000,

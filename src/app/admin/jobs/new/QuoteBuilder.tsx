@@ -16,6 +16,7 @@ type LockedClient = {
   companyName: string | null;
   contactName: string;
   legacyId: string | null;
+  vatNumber: string | null;
 };
 
 type Product = {
@@ -41,29 +42,38 @@ export default function QuoteBuilder({
   const [jobDescription, setJobDescription] = useState('');
   const [discount, setDiscount] = useState(0);
 
-  const initialProduct = initialProductId ? products.find(p => p.id === initialProductId) : null;
-  const initialQ = initialQty ? parseInt(initialQty, 10) : 1;
-
-  const [items, setItems] = useState<LineItem[]>([
-    { 
-      id: 1, 
-      productName: initialProduct?.name || '', 
-      description: '', 
-      quantity: isNaN(initialQ) ? 1 : initialQ, 
-      unitCost: initialProduct?.basePrice || 0 
-    },
-  ]);
-  const [nextId, setNextId] = useState(2);
+  const [items, setItems] = useState<LineItem[]>(() => {
+    if (initialProductId) {
+      const prod = products.find(p => p.id === initialProductId);
+      if (prod) {
+        return [{
+          id: '1',
+          productId: prod.id,
+          description: prod.name,
+          quantity: parseInt(initialQty || '1', 10) || 1,
+          unitPrice: prod.basePrice,
+        }];
+      }
+    }
+    return [
+      { id: '1', productId: '', description: '', quantity: 1, unitPrice: 0 },
+      { id: '2', productId: '', description: '', quantity: 1, unitPrice: 0 },
+      { id: '3', productId: '', description: '', quantity: 1, unitPrice: 0 },
+      { id: '4', productId: '', description: '', quantity: 1, unitPrice: 0 },
+      { id: '5', productId: '', description: '', quantity: 1, unitPrice: 0 }
+    ];
+  });
+  const [nextId, setNextId] = useState(6);
 
   const addRow = () => {
     setItems(prev => [
       ...prev,
-      { id: nextId, productName: '', description: '', quantity: 1, unitCost: 0 },
+      { id: String(nextId), productId: '', description: '', quantity: 1, unitPrice: 0 },
     ]);
     setNextId(n => n + 1);
   };
 
-  const removeRow = (id: number) => {
+  const removeRow = (id: string) => {
     if (items.length === 1) return;
     setItems(prev => prev.filter(item => item.id !== id));
   };
@@ -105,27 +115,24 @@ export default function QuoteBuilder({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider flex justify-between">
-            Locked Client
-            <a href="/admin/jobs/new" className="text-xs text-purple-400 hover:text-purple-300 normal-case flex items-center gap-1">
+            Prefilled Client Details
+            <a href="/admin/jobs/new" className="text-xs text-cyan-400 hover:text-cyan-300 normal-case flex items-center gap-1">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
-              Change
+              Select Different Client
             </a>
           </label>
-          <div className="w-full bg-[rgba(0,0,0,0.3)] border border-purple-500/50 rounded-xl px-4 py-3 text-white flex items-center justify-between shadow-[0_0_15px_rgba(168,85,247,0.15)]">
+          <div className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl px-4 py-3 text-white flex items-center justify-between shadow-[0_0_15px_rgba(6,182,212,0.3)]">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center text-sm font-black shadow-inner">
-                {(lockedClient.companyName || lockedClient.contactName).charAt(0).toUpperCase()}
-              </div>
               <div>
-                <div className="font-semibold">{lockedClient.companyName || lockedClient.contactName}</div>
-                {lockedClient.companyName && <div className="text-xs text-gray-400">{lockedClient.contactName}</div>}
+                <div className="font-black text-lg tracking-wider uppercase">{lockedClient.companyName || lockedClient.contactName}</div>
+                {(lockedClient.vatNumber || lockedClient.legacyId) && (
+                  <div className="text-xs text-white/90 font-medium flex gap-3 mt-0.5">
+                    {lockedClient.vatNumber && <span>VAT: {lockedClient.vatNumber}</span>}
+                    {lockedClient.legacyId && <span>ID: {lockedClient.legacyId}</span>}
+                  </div>
+                )}
               </div>
             </div>
-            {lockedClient.legacyId && (
-              <span className="text-[10px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full uppercase">
-                {lockedClient.legacyId}
-              </span>
-            )}
           </div>
         </div>
         <div className="space-y-2">
