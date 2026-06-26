@@ -61,6 +61,9 @@ export default async function ClientsDirectory({
             Search
           </button>
         </form>
+        <Link href="/admin/clients/new" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(37,99,235,0.4)] whitespace-nowrap">
+          + Register Client
+        </Link>
       </div>
 
       {/* Clients Table */}
