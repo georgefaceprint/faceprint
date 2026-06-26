@@ -38,7 +38,7 @@ FORMATTING RULES:
 `;
 
   const result = await streamText({
-    model: google('gemini-3.5-flash'),
+    model: google('gemini-flash-lite-latest'),
     system: systemPrompt,
     messages,
     stopWhen: stepCountIs(5),
