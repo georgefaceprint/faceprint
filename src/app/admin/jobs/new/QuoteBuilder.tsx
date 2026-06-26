@@ -31,7 +31,8 @@ export default function QuoteBuilder({
   products,
   initialProductId,
   initialQty,
-  requestId
+  requestId,
+  existingJob
 }: { 
   lockedClient: LockedClient, 
   products: Product[],
