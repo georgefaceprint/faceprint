@@ -16,7 +16,7 @@ export default async function NewQuotePage({ searchParams }: { searchParams: Pro
     prisma.product.findMany({
       take: 2000,
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, basePrice: true },
+      select: { id: true, name: true, basePrice: true, description: true },
     })
   ]);
 

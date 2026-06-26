@@ -23,6 +23,7 @@ type Product = {
   id: string;
   name: string;
   basePrice: number;
+  description: string | null;
 };
 
 export default function QuoteBuilder({ 
@@ -187,7 +188,12 @@ export default function QuoteBuilder({
                 const val = e.target.value;
                 updateItem(item.id, 'productName', val);
                 const matched = products.find(p => p.name === val);
-                if (matched) updateItem(item.id, 'unitCost', matched.basePrice);
+                if (matched) {
+                  updateItem(item.id, 'unitCost', matched.basePrice);
+                  if (matched.description) {
+                    updateItem(item.id, 'description', matched.description);
+                  }
+                }
               }}
               required
               placeholder="Search products..."
