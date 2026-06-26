@@ -30,7 +30,7 @@ export async function createQuote(formData: FormData) {
   const itemCount = parseInt(formData.get('itemCount') as string, 10) || 1;
 
   // Parse all line items
-  const lineItems = [];
+  const lineItems: { productName: string, itemDescription: string, quantity: number, unitCost: number }[] = [];
   for (let i = 0; i < itemCount; i++) {
     const productName = formData.get(`item_${i}_productName`) as string;
     const itemDescription = formData.get(`item_${i}_description`) as string;
@@ -92,7 +92,7 @@ export async function updateQuote(jobId: string, formData: FormData) {
   const itemCount = parseInt(formData.get('itemCount') as string, 10) || 1;
 
   // Parse all line items
-  const lineItems = [];
+  const lineItems: { productName: string, itemDescription: string, quantity: number, unitCost: number }[] = [];
   for (let i = 0; i < itemCount; i++) {
     const productName = formData.get(`item_${i}_productName`) as string;
     const itemDescription = formData.get(`item_${i}_description`) as string;
