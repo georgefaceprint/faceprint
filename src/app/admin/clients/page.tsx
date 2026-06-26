@@ -85,7 +85,7 @@ export default async function ClientsDirectory({
                 </tr>
               ) : (
                 clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group cursor-pointer" onClick={() => {}}>
+                  <tr key={client.id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
                     <td className="px-6 py-4">
                       <div className="font-medium text-white">{client.companyName || client.contactName}</div>
                       {client.companyName && <div className="text-xs text-gray-500">{client.contactName}</div>}

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import Link from 'next/link';
+import DailyPrintButton from '@/components/DailyPrintButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,18 +84,16 @@ export default async function DailyReportPage({
             </svg>
           </Link>
 
-          <form method="GET" action="/admin/reports/daily" className="flex">
+          <form method="GET" action="/admin/reports/daily" className="flex items-center gap-2">
             <input
               type="date"
               name="date"
               defaultValue={targetDateStr}
               className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
-              onChange={e => {
-                if (typeof window !== 'undefined') {
-                  window.location.href = `/admin/reports/daily?date=${e.target.value}`;
-                }
-              }}
             />
+            <button type="submit" className="glass-panel border border-[rgba(255,255,255,0.1)] px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all">
+              Go
+            </button>
           </form>
 
           {!isToday && (
@@ -148,15 +147,7 @@ export default async function DailyReportPage({
           <h3 className="text-lg font-bold text-white">
             {activeJobs.length} Job{activeJobs.length !== 1 ? 's' : ''} Quoted Today
           </h3>
-          <button
-            onClick={() => typeof window !== 'undefined' && window.print()}
-            className="flex items-center gap-1.5 text-sm text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 px-3 py-1.5 rounded-lg transition-all print:hidden"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print Report
-          </button>
+          <DailyPrintButton />
         </div>
 
         {jobs.length === 0 ? (
