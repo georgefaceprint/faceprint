@@ -29,6 +29,13 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
 
   return (
     <div className="max-w-5xl mx-auto space-y-4 pb-20 animate-fade-in">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: A4; margin: 0; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white; margin: 0; padding: 0; }
+          .print-container { width: 210mm; min-height: 297mm; margin: 0; padding: 15mm; page-break-after: always; box-sizing: border-box; }
+        }
+      `}} />
 
       {/* Back link */}
       <Link href="/admin/jobs" className="print:hidden inline-flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-sm">
@@ -48,8 +55,8 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
       />
 
       {/* ─── Printable Quote Document ─── */}
-      <div className="bg-white text-black rounded-xl shadow-2xl print:shadow-none print:rounded-none overflow-hidden">
-        <div className="p-10 md:p-14">
+      <div className="bg-white text-black rounded-xl shadow-2xl print:shadow-none print:rounded-none overflow-hidden print-container">
+        <div className="p-10 md:p-14 print:p-0">
 
           {/* Header */}
           <div className="flex justify-between items-start mb-10">

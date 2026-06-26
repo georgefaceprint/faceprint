@@ -4,8 +4,10 @@ import { useTransition, useState } from 'react';
 import { updateJobStatus, recordPayment, type JobStatus } from './actions';
 
 const STATUS_FLOW: { label: string; value: JobStatus; color: string; next?: JobStatus }[] = [
-  { label: 'Pending', value: 'PENDING', color: 'orange', next: 'IN_PRODUCTION' },
-  { label: 'In Production', value: 'IN_PRODUCTION', color: 'blue', next: 'DELIVERED' },
+  { label: 'Pending', value: 'PENDING', color: 'orange', next: 'QUOTED' },
+  { label: 'Quoted', value: 'QUOTED', color: 'yellow', next: 'IN_PRODUCTION' },
+  { label: 'In Production', value: 'IN_PRODUCTION', color: 'cyan', next: 'COMPLETED' },
+  { label: 'Completed', value: 'COMPLETED', color: 'blue', next: 'DELIVERED' },
   { label: 'Delivered', value: 'DELIVERED', color: 'green' },
   { label: 'Cancelled', value: 'CANCELLED', color: 'red' },
 ];
@@ -92,7 +94,7 @@ export default function JobControls({ jobId, currentStatus, totalAmount, amountP
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             )}
-            Mark as {nextStatus.replace(/_/g, ' ')}
+            {currentStatus === 'QUOTED' ? 'Convert to Job Card & Start Production' : `Mark as ${nextStatus.replace(/_/g, ' ')}`}
           </button>
         )}
 

@@ -26,6 +26,12 @@ export default async function InventoryManager({ searchParams }: { searchParams:
           <h1 className="text-3xl font-bold text-white tracking-tight">Inventory Manager</h1>
           <p className="text-gray-400 text-sm mt-1">Manage your products, categories, and recover deleted items.</p>
         </div>
+        <a href="/admin/inventory/new" className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(139,92,246,0.4)] flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Product
+        </a>
       </div>
 
       {/* Tabs */}
@@ -142,11 +148,16 @@ export default async function InventoryManager({ searchParams }: { searchParams:
                       </td>
                       <td className="p-4 text-right">
                         {currentTab === 'active' ? (
-                          <form action={softDeleteProduct.bind(null, product.id)} className="inline">
-                            <button type="submit" className="text-red-400 hover:text-red-300 font-semibold text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20">
-                              Soft Delete
-                            </button>
-                          </form>
+                          <div className="flex justify-end gap-2">
+                            <a href={`/admin/inventory/${product.id}/edit`} className="text-blue-400 hover:text-blue-300 font-semibold text-xs px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors border border-blue-500/20">
+                              Edit
+                            </a>
+                            <form action={softDeleteProduct.bind(null, product.id)} className="inline">
+                              <button type="submit" className="text-red-400 hover:text-red-300 font-semibold text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20">
+                                Soft Delete
+                              </button>
+                            </form>
+                          </div>
                         ) : (
                           <div className="flex justify-end gap-2">
                             <form action={restoreProduct.bind(null, product.id)} className="inline">
