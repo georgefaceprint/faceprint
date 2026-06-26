@@ -1,18 +1,18 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import QuoteBuilder from './QuoteBuilder';
+import ClientSelector from '@/components/ClientSelector';
 
 export const dynamic = 'force-dynamic';
 
-export default async function NewQuotePage({ searchParams }: { searchParams: Promise<{ requestId?: string, productId?: string, qty?: string }> }) {
+export default async function NewQuotePage({ searchParams }: { searchParams: Promise<{ requestId?: string, productId?: string, qty?: string, clientId?: string }> }) {
   const params = await searchParams;
   
-  const [clients, products] = await Promise.all([
-    prisma.client.findMany({
-      take: 2000,
-      orderBy: { companyName: 'asc' },
-      select: { id: true, companyName: true, contactName: true },
-    }),
+  const [lockedClient, products] = await Promise.all([
+    params.clientId ? prisma.client.findUnique({
+      where: { id: params.clientId },
+      select: { id: true, companyName: true, contactName: true, legacyId: true },
+    }) : null,
     prisma.product.findMany({
       take: 2000,
       orderBy: { name: 'asc' },
@@ -36,15 +36,19 @@ export default async function NewQuotePage({ searchParams }: { searchParams: Pro
         <p className="text-gray-400 mt-1">Add multiple line items, set a discount, and generate the quote document instantly.</p>
       </div>
 
-      <div className="glass-panel p-8 rounded-2xl border border-[rgba(255,255,255,0.1)] shadow-2xl">
-        <QuoteBuilder 
-          clients={clients} 
-          products={products} 
-          initialProductId={params.productId}
-          initialQty={params.qty}
-          requestId={params.requestId}
-        />
-      </div>
+      {!params.clientId || !lockedClient ? (
+        <ClientSelector />
+      ) : (
+        <div className="glass-panel p-8 rounded-2xl border border-[rgba(255,255,255,0.1)] shadow-2xl relative">
+          <QuoteBuilder 
+            lockedClient={lockedClient} 
+            products={products} 
+            initialProductId={params.productId}
+            initialQty={params.qty}
+            requestId={params.requestId}
+          />
+        </div>
+      )}
     </div>
   );
 }

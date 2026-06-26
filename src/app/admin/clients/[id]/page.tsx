@@ -95,7 +95,7 @@ export default async function ClientProfile({ params }: { params: Promise<{ id: 
 
           {/* Quick action */}
           <Link
-            href={`/admin/jobs/new`}
+            href={`/admin/jobs/new?clientId=${client.id}`}
             className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(139,92,246,0.4)] whitespace-nowrap"
           >
             + New Quote for Client

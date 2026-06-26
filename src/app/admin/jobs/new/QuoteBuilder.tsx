@@ -11,10 +11,11 @@ type LineItem = {
   unitCost: number;
 };
 
-type Client = {
+type LockedClient = {
   id: string;
   companyName: string | null;
   contactName: string;
+  legacyId: string | null;
 };
 
 type Product = {
@@ -24,21 +25,19 @@ type Product = {
 };
 
 export default function QuoteBuilder({ 
-  clients, 
+  lockedClient, 
   products,
   initialProductId,
   initialQty,
   requestId
 }: { 
-  clients: Client[], 
+  lockedClient: LockedClient, 
   products: Product[],
   initialProductId?: string,
   initialQty?: string,
   requestId?: string
 }) {
   const [isPending, startTransition] = useTransition();
-  const [clientId, setClientId] = useState('');
-  const [clientSearch, setClientSearch] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [discount, setDiscount] = useState(0);
 
@@ -85,7 +84,7 @@ export default function QuoteBuilder({
     e.preventDefault();
     const formData = new FormData();
     if (requestId) formData.append('requestId', requestId);
-    formData.append('clientId', clientId);
+    formData.append('clientId', lockedClient.id);
     formData.append('description', jobDescription);
     formData.append('discount', String(discount));
     formData.append('itemCount', String(items.length));
@@ -105,32 +104,29 @@ export default function QuoteBuilder({
       {/* Client & Description */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
-            Client *
+          <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider flex justify-between">
+            Locked Client
+            <a href="/admin/jobs/new" className="text-xs text-purple-400 hover:text-purple-300 normal-case flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
+              Change
+            </a>
           </label>
-          <input
-            list="clients-list"
-            value={clientSearch}
-            onChange={e => {
-              const val = e.target.value;
-              setClientSearch(val);
-              const matched = clients.find(c => (c.companyName || c.contactName) === val);
-              if (matched) {
-                setClientId(matched.id);
-              } else {
-                setClientId('');
-              }
-            }}
-            required
-            placeholder="Type to search clients..."
-            className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-          />
-          <datalist id="clients-list">
-            {clients.map(c => (
-              <option key={c.id} value={c.companyName || c.contactName || ''} />
-            ))}
-          </datalist>
-          {/* Hidden input to ensure clientId is submitted if we were using native form action, but we use state anyway */}
+          <div className="w-full bg-[rgba(0,0,0,0.3)] border border-purple-500/50 rounded-xl px-4 py-3 text-white flex items-center justify-between shadow-[0_0_15px_rgba(168,85,247,0.15)]">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center text-sm font-black shadow-inner">
+                {(lockedClient.companyName || lockedClient.contactName).charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div className="font-semibold">{lockedClient.companyName || lockedClient.contactName}</div>
+                {lockedClient.companyName && <div className="text-xs text-gray-400">{lockedClient.contactName}</div>}
+              </div>
+            </div>
+            {lockedClient.legacyId && (
+              <span className="text-[10px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full uppercase">
+                {lockedClient.legacyId}
+              </span>
+            )}
+          </div>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
@@ -286,7 +282,7 @@ export default function QuoteBuilder({
       {/* Submit */}
       <button
         type="submit"
-        disabled={isPending || !clientId}
+        disabled={isPending}
         className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all"
       >
         {isPending ? (
