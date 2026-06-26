@@ -45,6 +45,29 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
         Back to Jobs Board
       </Link>
 
+      <div className="flex gap-3">
+        {(job.status === 'PENDING' || job.status === 'QUOTED') && (
+          <Link 
+            href={`/admin/jobs/${job.id}/edit`}
+            className="print:hidden bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white px-4 py-2 rounded-lg font-medium transition-colors border border-[rgba(255,255,255,0.1)] flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Edit Quote
+          </Link>
+        )}
+        <button 
+          onClick={() => window.print()}
+          className="print:hidden bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)] flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          Print Quote
+        </button>
+      </div>
+
       {/* Controls (client component) */}
       <JobControls
         jobId={job.id}

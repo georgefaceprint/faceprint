@@ -80,3 +80,54 @@ export async function createQuote(formData: FormData) {
 
   redirect(`/admin/jobs/${job.id}`);
 }
+
+export async function updateQuote(jobId: string, formData: FormData) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('Not authenticated');
+  }
+
+  const description = formData.get('description') as string;
+  const discount = parseFloat(formData.get('discount') as string) || 0;
+  const itemCount = parseInt(formData.get('itemCount') as string, 10) || 1;
+
+  // Parse all line items
+  const lineItems = [];
+  for (let i = 0; i < itemCount; i++) {
+    const productName = formData.get(`item_${i}_productName`) as string;
+    const itemDescription = formData.get(`item_${i}_description`) as string;
+    const quantity = parseInt(formData.get(`item_${i}_quantity`) as string, 10);
+    const unitCost = parseFloat(formData.get(`item_${i}_unitCost`) as string);
+    lineItems.push({ productName, itemDescription, quantity, unitCost });
+  }
+
+  const subtotal = lineItems.reduce((sum, item) => sum + item.quantity * item.unitCost, 0);
+  const discountAmount = subtotal * (discount / 100);
+  const afterDiscount = subtotal - discountAmount;
+  const tax = afterDiscount * 0.15;
+  const totalAmount = afterDiscount + tax;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.jobItem.deleteMany({ where: { jobId } });
+    
+    await tx.job.update({
+      where: { id: jobId },
+      data: {
+        description,
+        totalAmount,
+        balance: totalAmount, // Assuming editing quote resets balance/it's unpaid
+        notes: discount > 0 ? `Discount: ${discount}%` : null,
+        items: {
+          create: lineItems.map(item => ({
+            description: item.productName + (item.itemDescription ? ` - ${item.itemDescription}` : ''),
+            quantity: item.quantity,
+            unitPrice: item.unitCost,
+            totalPrice: item.quantity * item.unitCost,
+          })),
+        },
+      },
+    });
+  });
+
+  redirect(`/admin/jobs/${jobId}`);
+}

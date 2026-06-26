@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { createQuote } from './actions';
+import { createQuote, updateQuote } from './actions';
 
 type LineItem = {
   id: number;
@@ -37,13 +37,40 @@ export default function QuoteBuilder({
   products: Product[],
   initialProductId?: string,
   initialQty?: string,
-  requestId?: string
+  requestId?: string,
+  existingJob?: any
+
 }) {
   const [isPending, startTransition] = useTransition();
-  const [jobDescription, setJobDescription] = useState('');
-  const [discount, setDiscount] = useState(0);
+  const [jobDescription, setJobDescription] = useState(existingJob?.description || '');
+  
+  // Parse discount from existingJob notes
+  const [discount, setDiscount] = useState(() => {
+    if (existingJob?.notes) {
+      const match = existingJob.notes.match(/Discount:\s*([\d.]+)%/);
+      if (match) return parseFloat(match[1]);
+    }
+    return 0;
+  });
 
   const [items, setItems] = useState<LineItem[]>(() => {
+    if (existingJob?.items?.length) {
+      return existingJob.items.map((item: any, idx: number) => {
+        // Split description by ' - ' assuming the first part is productName
+        const parts = item.description.split(' - ');
+        const productName = parts[0] || '';
+        const desc = parts.slice(1).join(' - ') || '';
+        return {
+          id: String(idx + 1),
+          productId: '', // We don't store productId directly on jobItem right now
+          productName,
+          description: desc,
+          quantity: item.quantity,
+          unitCost: item.unitPrice
+        };
+      });
+    }
+
     if (initialProductId) {
       const prod = products.find(p => p.id === initialProductId);
       if (prod) {
@@ -106,7 +133,11 @@ export default function QuoteBuilder({
       formData.append(`item_${i}_unitCost`, String(item.unitCost));
     });
     startTransition(() => {
-      createQuote(formData);
+      if (existingJob) {
+        updateQuote(existingJob.id, formData);
+      } else {
+        createQuote(formData);
+      }
     });
   };
 
@@ -306,6 +337,8 @@ export default function QuoteBuilder({
             </svg>
             Generating Quote...
           </span>
+        ) : existingJob ? (
+          'Update Quote Document'
         ) : (
           'Generate Quote Document'
         )}
