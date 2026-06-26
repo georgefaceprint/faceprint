@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { createQuote, updateQuote } from './actions';
 
 type LineItem = {
-  id: number;
+  id: string;
   productName: string;
   description: string;
   quantity: number;
@@ -77,19 +77,19 @@ export default function QuoteBuilder({
       if (prod) {
         return [{
           id: '1',
-          productId: prod.id,
-          description: prod.name,
+          productName: prod.name,
+          description: prod.description || '',
           quantity: parseInt(initialQty || '1', 10) || 1,
-          unitPrice: prod.basePrice,
+          unitCost: prod.basePrice,
         }];
       }
     }
     return [
-      { id: '1', productId: '', description: '', quantity: 1, unitPrice: 0 },
-      { id: '2', productId: '', description: '', quantity: 1, unitPrice: 0 },
-      { id: '3', productId: '', description: '', quantity: 1, unitPrice: 0 },
-      { id: '4', productId: '', description: '', quantity: 1, unitPrice: 0 },
-      { id: '5', productId: '', description: '', quantity: 1, unitPrice: 0 }
+      { id: '1', productName: '', description: '', quantity: 1, unitCost: 0 },
+      { id: '2', productName: '', description: '', quantity: 1, unitCost: 0 },
+      { id: '3', productName: '', description: '', quantity: 1, unitCost: 0 },
+      { id: '4', productName: '', description: '', quantity: 1, unitCost: 0 },
+      { id: '5', productName: '', description: '', quantity: 1, unitCost: 0 }
     ];
   });
   const [nextId, setNextId] = useState(6);
@@ -97,7 +97,7 @@ export default function QuoteBuilder({
   const addRow = () => {
     setItems(prev => [
       ...prev,
-      { id: String(nextId), productId: '', description: '', quantity: 1, unitPrice: 0 },
+      { id: String(nextId), productName: '', description: '', quantity: 1, unitCost: 0 },
     ]);
     setNextId(n => n + 1);
   };
@@ -107,7 +107,7 @@ export default function QuoteBuilder({
     setItems(prev => prev.filter(item => item.id !== id));
   };
 
-  const updateItem = (id: number, field: keyof LineItem, value: string | number) => {
+  const updateItem = (id: string, field: keyof LineItem, value: string | number) => {
     setItems(prev =>
       prev.map(item => (item.id === id ? { ...item, [field]: value } : item))
     );
