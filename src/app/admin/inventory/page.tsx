@@ -3,14 +3,30 @@ import { softDeleteProduct, restoreProduct, hardDeleteProduct, toggleHotCategory
 
 export const dynamic = 'force-dynamic';
 
-export default async function InventoryManager({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+export default async function InventoryManager({ searchParams }: { searchParams: Promise<{ tab?: string; q?: string; categoryId?: string }> }) {
   const params = await searchParams;
   const currentTab = params.tab || 'active';
+  const query = params.q || '';
+  const categoryId = params.categoryId || '';
+
+  const whereClause: any = { isDeleted: currentTab === 'recycle' };
+  
+  if (query) {
+    whereClause.OR = [
+      { name: { contains: query, mode: 'insensitive' as const } },
+      { sku: { contains: query, mode: 'insensitive' as const } }
+    ];
+  }
+
+  if (categoryId) {
+    whereClause.categoryId = categoryId;
+  }
 
   const products = await prisma.product.findMany({
-    where: { isDeleted: currentTab === 'recycle' },
+    where: whereClause,
     include: { category: true },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    take: query || categoryId ? 1000 : 100
   });
 
   const categories = await prisma.category.findMany({
@@ -70,6 +86,42 @@ export default async function InventoryManager({ searchParams }: { searchParams:
           Recycle Bin
         </a>
       </div>
+
+      {/* Filters (Only show on products tab, not categories tab) */}
+      {currentTab !== 'categories' && (
+        <form action="/admin/inventory" method="GET" className="flex flex-col md:flex-row gap-3">
+          <input type="hidden" name="tab" value={currentTab} />
+          
+          <input 
+            type="text" 
+            name="q"
+            defaultValue={query}
+            placeholder="Search products by Name or SKU..." 
+            className="bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors flex-1"
+          />
+          
+          <select 
+            name="categoryId" 
+            defaultValue={categoryId}
+            className="bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors w-full md:w-64"
+          >
+            <option value="">All Categories</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+
+          <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-xl transition-colors font-bold text-sm shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+            Search
+          </button>
+          
+          {(query || categoryId) && (
+            <a href={`/admin/inventory?tab=${currentTab}`} className="bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-gray-300 hover:text-white px-4 py-2.5 rounded-xl transition-colors font-medium text-sm flex items-center border border-[rgba(255,255,255,0.1)]">
+              Clear
+            </a>
+          )}
+        </form>
+      )}
 
       <div className="glass-panel p-1 rounded-2xl border border-[rgba(255,255,255,0.05)] shadow-2xl overflow-hidden bg-[rgba(255,255,255,0.02)]">
         <div className="overflow-x-auto">
