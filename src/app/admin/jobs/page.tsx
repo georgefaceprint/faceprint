@@ -3,9 +3,30 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function JobsBoard() {
+export default async function JobsBoard({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams?.q || '';
+
+  const whereClause = query
+    ? {
+        OR: [
+          { jobNumber: { contains: query, mode: 'insensitive' as const } },
+          { description: { contains: query, mode: 'insensitive' as const } },
+          { id: { contains: query, mode: 'insensitive' as const } },
+          { client: { companyName: { contains: query, mode: 'insensitive' as const } } },
+          { client: { contactName: { contains: query, mode: 'insensitive' as const } } },
+          { client: { legacyId: { contains: query, mode: 'insensitive' as const } } },
+        ],
+      }
+    : {};
+
   const jobs = await prisma.job.findMany({
-    take: 100, // Limit to 100 recent jobs for the board
+    where: whereClause,
+    take: query ? 500 : 100, // Show more results if searching
     orderBy: { createdAt: 'desc' },
     include: { client: true }
   });
@@ -33,14 +54,29 @@ export default async function JobsBoard() {
 
   return (
     <div className="space-y-6 animate-fade-in h-full flex flex-col">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-white">Jobs Board</h2>
           <p className="text-gray-400">Track and manage active production jobs.</p>
         </div>
-        <Link href="/admin/jobs/new" className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-          + New Quote
-        </Link>
+        
+        <div className="flex items-center gap-3">
+          <form action="/admin/jobs" method="GET" className="flex">
+            <input 
+              type="text" 
+              name="q"
+              defaultValue={query}
+              placeholder="Search jobs, clients, legacy IDs..." 
+              className="bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] rounded-l-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors w-64 md:w-80"
+            />
+            <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-r-xl transition-colors font-medium text-sm">
+              Search
+            </button>
+          </form>
+          <Link href="/admin/jobs/new" className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] whitespace-nowrap text-sm">
+            + New Quote
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">

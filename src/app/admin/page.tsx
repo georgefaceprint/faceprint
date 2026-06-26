@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import AnalyticsCharts from '@/components/AnalyticsCharts';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +22,13 @@ export default async function AdminDashboard() {
     take: 5,
     orderBy: { createdAt: 'desc' },
     include: { client: true }
+  });
+
+  // Recent quote requests
+  const recentQuotes = await prisma.quoteRequest.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+    include: { items: { include: { product: true } } }
   });
 
   return (
@@ -50,6 +58,9 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
+      {/* Analytics Charts */}
+      <AnalyticsCharts />
+
       {/* Recent Activity */}
       <div className="glass-panel rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center">
@@ -75,6 +86,40 @@ export default async function AdminDashboard() {
                     {job.status.replace('_', ' ')}
                   </span>
                   <p className="text-white font-medium mt-1">R {job.totalAmount.toLocaleString()}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Recent Quote Requests */}
+      <div className="glass-panel rounded-2xl overflow-hidden mt-8">
+        <div className="p-6 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center">
+          <h3 className="text-xl font-bold text-white">Recent Quote Requests</h3>
+        </div>
+        <div className="divide-y divide-[rgba(255,255,255,0.05)]">
+          {recentQuotes.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No recent quote requests.</div>
+          ) : (
+            recentQuotes.map((quote) => (
+              <div key={quote.id} className="p-6 flex items-center justify-between hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+                <div>
+                  <p className="text-white font-medium">{quote.guestName}</p>
+                  <p className="text-sm text-gray-400">
+                    {quote.items[0]?.product?.name || 'Unknown Product'} (x{quote.items[0]?.quantity || 1})
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{quote.guestEmail} • {quote.guestPhone}</p>
+                </div>
+                <div className="text-right">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider
+                    ${quote.status === 'PENDING' ? 'bg-orange-500/20 text-orange-400' : ''}
+                    ${quote.status === 'QUOTED' ? 'bg-blue-500/20 text-blue-400' : ''}
+                    ${quote.status === 'CONVERTED' ? 'bg-green-500/20 text-green-400' : ''}
+                  `}>
+                    {quote.status}
+                  </span>
+                  <p className="text-xs text-gray-500 mt-2">{new Date(quote.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
             ))

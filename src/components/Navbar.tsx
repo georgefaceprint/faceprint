@@ -17,17 +17,18 @@ export default function Navbar() {
         </Link>
         
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-gray-300 hover:text-white transition-colors font-medium">Home</Link>
-          <Link href="/about" className="text-gray-300 hover:text-white transition-colors font-medium">About Us</Link>
-          <Link href="/products" className="text-gray-300 hover:text-white transition-colors font-medium">Products</Link>
-          <Link href="/faq" className="text-gray-300 hover:text-white transition-colors font-medium">FAQs</Link>
-          <Link href="/contact" className="text-gray-300 hover:text-white transition-colors font-medium">Contact</Link>
+          <Link href="/" prefetch={false} className="text-gray-300 hover:text-white transition-colors font-medium">Home</Link>
+          <Link href="/about" prefetch={false} className="text-gray-300 hover:text-white transition-colors font-medium">About Us</Link>
+          <Link href="/products" prefetch={false} className="text-gray-300 hover:text-white transition-colors font-medium">Products</Link>
+          <Link href="/faq" prefetch={false} className="text-gray-300 hover:text-white transition-colors font-medium">FAQs</Link>
+          <Link href="/contact" prefetch={false} className="text-gray-300 hover:text-white transition-colors font-medium">Contact</Link>
         </nav>
 
         <div className="flex items-center space-x-4">
           <Link 
             href="/login" 
-            className="hidden md:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            prefetch={false}
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors shadow-lg shadow-purple-500/20"
           >
             Staff Login
           </Link>

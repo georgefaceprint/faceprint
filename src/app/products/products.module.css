@@ -176,3 +176,71 @@
 .emptyState p {
   color: var(--text-light);
 }
+
+/* Category Cards */
+.categoryCard {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  text-decoration: none;
+}
+
+.categoryCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+.categoryImage {
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  background-color: #111827;
+  border-bottom: 1px solid var(--border-color);
+  transition: transform 0.5s ease;
+}
+
+.categoryCard:hover .categoryImage {
+  transform: scale(1.05);
+}
+
+.categoryContent {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: var(--surface-color);
+  z-index: 1;
+}
+
+.categoryTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.4;
+}
+
+.categoryFooter {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.arrow {
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.categoryCard:hover .arrow {
+  transform: translateX(4px);
+}

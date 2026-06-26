@@ -17,13 +17,42 @@ type Client = {
   contactName: string;
 };
 
-export default function QuoteBuilder({ clients }: { clients: Client[] }) {
+type Product = {
+  id: string;
+  name: string;
+  basePrice: number;
+};
+
+export default function QuoteBuilder({ 
+  clients, 
+  products,
+  initialProductId,
+  initialQty,
+  requestId
+}: { 
+  clients: Client[], 
+  products: Product[],
+  initialProductId?: string,
+  initialQty?: string,
+  requestId?: string
+}) {
   const [isPending, startTransition] = useTransition();
   const [clientId, setClientId] = useState('');
+  const [clientSearch, setClientSearch] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [discount, setDiscount] = useState(0);
+
+  const initialProduct = initialProductId ? products.find(p => p.id === initialProductId) : null;
+  const initialQ = initialQty ? parseInt(initialQty, 10) : 1;
+
   const [items, setItems] = useState<LineItem[]>([
-    { id: 1, productName: '', description: '', quantity: 1, unitCost: 0 },
+    { 
+      id: 1, 
+      productName: initialProduct?.name || '', 
+      description: '', 
+      quantity: isNaN(initialQ) ? 1 : initialQ, 
+      unitCost: initialProduct?.basePrice || 0 
+    },
   ]);
   const [nextId, setNextId] = useState(2);
 
@@ -55,6 +84,7 @@ export default function QuoteBuilder({ clients }: { clients: Client[] }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData();
+    if (requestId) formData.append('requestId', requestId);
     formData.append('clientId', clientId);
     formData.append('description', jobDescription);
     formData.append('discount', String(discount));
@@ -78,19 +108,29 @@ export default function QuoteBuilder({ clients }: { clients: Client[] }) {
           <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
             Client *
           </label>
-          <select
-            value={clientId}
-            onChange={e => setClientId(e.target.value)}
+          <input
+            list="clients-list"
+            value={clientSearch}
+            onChange={e => {
+              const val = e.target.value;
+              setClientSearch(val);
+              const matched = clients.find(c => (c.companyName || c.contactName) === val);
+              if (matched) {
+                setClientId(matched.id);
+              } else {
+                setClientId('');
+              }
+            }}
             required
+            placeholder="Type to search clients..."
             className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-          >
-            <option value="">— Select a Client —</option>
+          />
+          <datalist id="clients-list">
             {clients.map(c => (
-              <option key={c.id} value={c.id}>
-                {c.companyName || c.contactName}
-              </option>
+              <option key={c.id} value={c.companyName || c.contactName || ''} />
             ))}
-          </select>
+          </datalist>
+          {/* Hidden input to ensure clientId is submitted if we were using native form action, but we use state anyway */}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
@@ -138,11 +178,16 @@ export default function QuoteBuilder({ clients }: { clients: Client[] }) {
             className="grid grid-cols-1 md:grid-cols-[2fr_3fr_80px_120px_40px] gap-3 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.06)] rounded-xl p-3 group"
           >
             <input
-              type="text"
+              list="products-list"
               value={item.productName}
-              onChange={e => updateItem(item.id, 'productName', e.target.value)}
+              onChange={e => {
+                const val = e.target.value;
+                updateItem(item.id, 'productName', val);
+                const matched = products.find(p => p.name === val);
+                if (matched) updateItem(item.id, 'unitCost', matched.basePrice);
+              }}
               required
-              placeholder="PULLUP DLX 850"
+              placeholder="Search products..."
               className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
             />
             <input
@@ -191,6 +236,12 @@ export default function QuoteBuilder({ clients }: { clients: Client[] }) {
             </div>
           </div>
         ))}
+
+        <datalist id="products-list">
+          {products.map(p => (
+            <option key={p.id} value={p.name} />
+          ))}
+        </datalist>
       </div>
 
       {/* Totals Panel */}

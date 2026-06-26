@@ -66,5 +66,17 @@ export async function createQuote(formData: FormData) {
     },
   });
 
+  const requestId = formData.get('requestId') as string | null;
+  if (requestId) {
+    try {
+      await prisma.quoteRequest.update({
+        where: { id: requestId },
+        data: { status: 'CONVERTED', jobId: job.id }
+      });
+    } catch (err) {
+      console.error('Failed to link quote request:', err);
+    }
+  }
+
   redirect(`/admin/jobs/${job.id}`);
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import QuoteButton from '@/components/QuoteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,15 +80,7 @@ export default async function ProductItemPage({ params }: { params: Promise<{ id
             <p className="text-sm text-gray-400">
               For exact pricing on specific quantities, custom sizes, or bulk orders, please request a formal quote.
             </p>
-            <Link 
-              href="/contact" 
-              className="flex items-center justify-center gap-2 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all transform hover:-translate-y-0.5"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Request Quote
-            </Link>
+            <QuoteButton product={product} />
           </div>
         </div>
       </div>

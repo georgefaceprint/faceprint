@@ -8,9 +8,10 @@ export const dynamic = 'force-dynamic';
 export default async function CategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const category = await prisma.category.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
     include: {
       products: {
+        where: { isDeleted: false },
         orderBy: { basePrice: 'asc' }
       }
     }

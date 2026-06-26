@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useActionState, useEffect } from 'react';
+import { useState, useActionState, useEffect, startTransition } from 'react';
 import { authenticate, checkSetupStatus, setupPasscode } from './actions';
 import Link from 'next/link';
 
@@ -15,8 +15,6 @@ type UserProfile = {
 export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [isSetupMode, setIsSetupMode] = useState<boolean>(false);
-  const [passcode, setPasscode] = useState('');
-  const [confirmPasscode, setConfirmPasscode] = useState('');
   const [localError, setLocalError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,31 +44,36 @@ export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
 
   const handleBack = () => {
     setSelectedUser(null);
-    setPasscode('');
-    setConfirmPasscode('');
     setLocalError('');
     setIsSetupMode(false);
   };
 
   const handleSetupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode !== confirmPasscode) {
+    const formData = new FormData(e.target as HTMLFormElement);
+    const passcodeVal = formData.get('passcode') as string;
+    const confirmPasscodeVal = formData.get('confirmPasscode') as string;
+
+    if (passcodeVal !== confirmPasscodeVal) {
       setLocalError('Passcodes do not match.');
       return;
     }
-    if (passcode.length < 4) {
+    if (passcodeVal.length < 4) {
       setLocalError('Passcode must be at least 4 characters.');
       return;
     }
 
     setIsLoading(true);
     try {
-      await setupPasscode(selectedUser!.phone, passcode);
+      await setupPasscode(selectedUser!.phone, passcodeVal);
       // After setup, automatically log them in
-      const formData = new FormData();
-      formData.append('phone', selectedUser!.phone);
-      formData.append('password', passcode);
-      dispatchAuth(formData);
+      const authData = new FormData();
+      authData.append('phone', selectedUser!.phone);
+      authData.append('password', passcodeVal);
+      authData.append('redirectTo', '/admin');
+      startTransition(() => {
+        dispatchAuth(authData);
+      });
     } catch (err) {
       setLocalError('Failed to setup passcode.');
       setIsLoading(false);
@@ -79,14 +82,19 @@ export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passcode) return;
+    const form = new FormData(e.target as HTMLFormElement);
+    const passcodeVal = form.get('passcode') as string;
+    if (!passcodeVal) return;
     
     setIsLoading(true);
     setLocalError('');
-    const formData = new FormData();
-    formData.append('phone', selectedUser!.phone);
-    formData.append('password', passcode);
-    dispatchAuth(formData);
+    const authData = new FormData();
+    authData.append('phone', selectedUser!.phone);
+    authData.append('password', passcodeVal);
+    authData.append('redirectTo', '/admin');
+    startTransition(() => {
+      dispatchAuth(authData);
+    });
   };
 
   return (
@@ -114,8 +122,23 @@ export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
           {!selectedUser ? (
             <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               {profiles.length === 0 ? (
-                <div className="text-center py-6 text-gray-400">
+                <div className="text-center py-6 text-gray-400 space-y-4">
                   <p>No staff profiles found in the database.</p>
+                  <button
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await fetch('/api/seed');
+                        window.location.reload();
+                      } catch (err) {
+                        setLocalError('Failed to initialize database.');
+                        setIsLoading(false);
+                      }
+                    }}
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors shadow-lg shadow-purple-500/20"
+                  >
+                    Initialize Staff Profiles
+                  </button>
                 </div>
               ) : (
                 profiles.map((profile) => (
@@ -149,9 +172,8 @@ export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
                     id="passcode"
                     type="password"
                     inputMode="numeric"
+                    name="passcode"
                     autoFocus
-                    value={passcode}
-                    onChange={(e) => setPasscode(e.target.value)}
                     required
                     className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-center text-2xl tracking-[0.5em]"
                   />
@@ -166,8 +188,7 @@ export default function LoginForm({ profiles }: { profiles: UserProfile[] }) {
                       id="confirmPasscode"
                       type="password"
                       inputMode="numeric"
-                      value={confirmPasscode}
-                      onChange={(e) => setConfirmPasscode(e.target.value)}
+                      name="confirmPasscode"
                       required
                       className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-center text-2xl tracking-[0.5em]"
                     />

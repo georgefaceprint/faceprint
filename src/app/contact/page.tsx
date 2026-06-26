@@ -46,7 +46,7 @@ export default function Contact() {
               <div className={styles.icon}>📞</div>
               <div>
                 <h3 className={styles.infoTitle}>Phone Number</h3>
-                <p className={styles.infoText}>+27 123 456 7890</p>
+                <p className={styles.infoText}>+27 11 000 0000</p>
                 <p className={styles.infoText}>Mon-Fri, 8:00 AM - 5:00 PM</p>
               </div>
             </div>
@@ -55,7 +55,7 @@ export default function Contact() {
               <div className={styles.icon}>✉️</div>
               <div>
                 <h3 className={styles.infoTitle}>Email Address</h3>
-                <p className={styles.infoText}>info@faceprint.co.za</p>
+                <p className={styles.infoText}>sales@faceprint.co.za</p>
                 <p className={styles.infoText}>support@faceprint.co.za</p>
               </div>
             </div>
@@ -65,9 +65,9 @@ export default function Contact() {
               <div>
                 <h3 className={styles.infoTitle}>Physical Address</h3>
                 <p className={styles.infoText}>
-                  123 Print Avenue<br/>
-                  Industrial Park<br/>
-                  Pretoria, 0001
+                  Johannesburg<br/>
+                  Gauteng<br/>
+                  South Africa
                 </p>
               </div>
             </div>

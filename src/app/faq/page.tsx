@@ -11,26 +11,26 @@ export default function FAQ() {
     {
       category: "Shipping",
       questions: [
-        { q: "What Shipping Methods Are Available?", a: "Ex Portland Pitchfork irure mustache. Eutra fap before they sold out literally. Aliquip ugh bicycle rights actually mlkshk, seitan squid craft beer tempor." },
-        { q: "Do You Ship Internationally?", a: "Hoodie tote bag mixtape tofu. Typewriter jean shorts wolf quinoa, messenger bag organic freegan cray." },
-        { q: "How Long Will It Take To Get My Package?", a: "Swag slow-carb quinoa VHS typewriter pork belly brunch, paleo single-origin coffee Wes Anderson. Flexitarian Pitchfork forage, literally paleo fap pour-over. Wes Anderson Pinterest YOLO fanny pack meggings, deep v XOXO chambray sustainable slow-carb raw denim church-key fap chillwave Etsy. +1 typewriter kitsch, American Apparel tofu Banksy Vice." }
+        { q: "What Shipping Methods Are Available?", a: "We use trusted nationwide couriers for all deliveries across South Africa. For local orders, you can also opt to collect your prints directly from our facility." },
+        { q: "Do You Ship Internationally?", a: "Currently, we specialize in delivering high-quality prints within South Africa. We cover all major cities and regional areas." },
+        { q: "How Long Will It Take To Get My Package?", a: "Standard printing takes 2-4 business days. Once dispatched, standard courier delivery takes an additional 1-3 business days depending on your location. We also offer 24-hour rush printing on selected products such as PVC Banners!" }
       ]
     },
     {
       category: "Payment",
       questions: [
-        { q: "What Payment Methods Are Accepted?", a: "Fashion axe DIY jean shorts, swag kale chips meh polaroid kogi butcher Wes Anderson chambray next level semiotics gentrify yr. Voluptate photo booth fugiat Vice. Austin sed Williamsburg, ea labore raw denim voluptate cred proident mixtape excepteur mustache. Twee chia photo booth readymade food truck, hoodie roof party swag keytar PBR DIY." },
-        { q: "Is Buying On-Line Safe?", a: "Art party authentic freegan semiotics jean shorts chia cred. Neutra Austin roof party Brooklyn, synth Thundercats swag 8-bit photo booth. Plaid letterpress leggings craft beer meh ethical Pinterest." }
+        { q: "What Payment Methods Are Accepted?", a: "We accept all major Credit and Debit cards via our secure payment gateway, as well as EFT (Electronic Funds Transfer). Your order goes into production as soon as payment clears." },
+        { q: "Is Buying On-Line Safe?", a: "Absolutely. Our platform uses state-of-the-art SSL encryption and we partner with certified, trusted payment providers to ensure your details are 100% secure." }
       ]
     },
     {
       category: "Orders & Returns",
       questions: [
-        { q: "How do I place an Order?", a: "Keytar cray slow-carb, Godard banh mi salvia pour-over. Slow-carb Odd Future seitan normcore. Master cleanse American Apparel gentrify flexitarian beard slow-carb next level." },
-        { q: "How Can I Cancel Or Change My Order?", a: "Plaid letterpress leggings craft beer meh ethical Pinterest. Art party authentic freegan semiotics jean shorts chia cred. Neutra Austin roof party Brooklyn, synth Thundercats swag 8-bit photo booth." },
-        { q: "Do I need an account to place an order?", a: "Thundercats swag 8-bit photo booth. Plaid letterpress leggings craft beer meh ethical Pinterest. Twee chia photo booth readymade food truck, hoodie roof party swag keytar PBR DIY. Cray ugh 3 wolf moon fap, fashion axe irony butcher cornhole typewriter chambray VHS banjo street art." },
-        { q: "How Do I Track My Order?", a: "Keytar cray slow-carb, Godard banh mi salvia pour-over. Slow-carb @Odd Future seitan normcore. Master cleanse American Apparel gentrify flexitarian beard slow-carb next level." },
-        { q: "How Can I Return a Product?", a: "Kale chips Truffaut Williamsburg, hashtag fixie Pinterest raw denim c hambray drinking vinegar Carles street art Bushwick gastropub. Wolf Tumblr paleo church-key. Plaid food truck Echo Park YOLO bitters hella, direct trade Thundercats leggings quinoa before they sold out. You probably haven't heard of them wayfarers authentic umami drinking vinegar Pinterest Cosby sweater, fingerstache fap High Life." }
+        { q: "How do I place an Order?", a: "Simply browse our product catalog, select your printing options, and click 'Get a Quote' or 'Buy Now'. You can upload your custom artwork directly or email it to our design team." },
+        { q: "How Can I Cancel Or Change My Order?", a: "Because our printing processes are rapid, changes or cancellations must be made within 1 hour of placing the order. Please contact our support team immediately if you need to make changes before production starts." },
+        { q: "Do I need an account to place an order?", a: "You can check out as a guest, but creating an account allows you to easily track your orders, save your artwork files, and re-order with a single click." },
+        { q: "How Do I Track My Order?", a: "Once your order is dispatched, you will receive an email with a tracking number and a link to trace your package in real-time." },
+        { q: "What is your Return Policy?", a: "If your print is defective or does not match your approved proof, please contact us within 7 days of receipt. We stand by our work and will gladly reprint the item or offer a refund according to our quality guarantee." }
       ]
     }
   ];

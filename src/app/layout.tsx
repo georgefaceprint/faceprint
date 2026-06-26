@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Outfit } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import ChatWidget from "@/components/ChatWidget";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.variable} antialiased`}>
+        <PWAInstallPrompt />
         <Navbar />
         {children}
         <ChatWidget />

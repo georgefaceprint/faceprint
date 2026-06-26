@@ -20,6 +20,7 @@ export default async function ClientsDirectory({
           { companyName: { contains: query, mode: 'insensitive' as const } },
           { contactName: { contains: query, mode: 'insensitive' as const } },
           { email: { contains: query, mode: 'insensitive' as const } },
+          { legacyId: { contains: query, mode: 'insensitive' as const } },
         ],
       }
     : {};

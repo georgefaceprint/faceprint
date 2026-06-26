@@ -4,12 +4,21 @@ import QuoteBuilder from './QuoteBuilder';
 
 export const dynamic = 'force-dynamic';
 
-export default async function NewQuotePage() {
-  const clients = await prisma.client.findMany({
-    take: 500,
-    orderBy: { companyName: 'asc' },
-    select: { id: true, companyName: true, contactName: true },
-  });
+export default async function NewQuotePage({ searchParams }: { searchParams: Promise<{ requestId?: string, productId?: string, qty?: string }> }) {
+  const params = await searchParams;
+  
+  const [clients, products] = await Promise.all([
+    prisma.client.findMany({
+      take: 2000,
+      orderBy: { companyName: 'asc' },
+      select: { id: true, companyName: true, contactName: true },
+    }),
+    prisma.product.findMany({
+      take: 2000,
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, basePrice: true },
+    })
+  ]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-16">
@@ -28,7 +37,13 @@ export default async function NewQuotePage() {
       </div>
 
       <div className="glass-panel p-8 rounded-2xl border border-[rgba(255,255,255,0.1)] shadow-2xl">
-        <QuoteBuilder clients={clients} />
+        <QuoteBuilder 
+          clients={clients} 
+          products={products} 
+          initialProductId={params.productId}
+          initialQty={params.qty}
+          requestId={params.requestId}
+        />
       </div>
     </div>
   );
