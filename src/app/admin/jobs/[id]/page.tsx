@@ -95,6 +95,8 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
           totalAmount={job.totalAmount}
           amountPaid={job.amountPaid}
           balance={job.balance}
+          quoteNumber={quoteNumber}
+          clientName={job.client?.companyName || job.client?.contactName || ''}
         />
 
         {/* ─── Printable Quote Document ─── */}

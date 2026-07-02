@@ -28,9 +28,11 @@ type Props = {
   totalAmount: number;
   amountPaid: number;
   balance: number;
+  quoteNumber?: string;
+  clientName?: string;
 };
 
-export default function JobControls({ jobId, currentStatus, totalAmount, amountPaid, balance }: Props) {
+export default function JobControls({ jobId, currentStatus, totalAmount, amountPaid, balance, quoteNumber = '', clientName = '' }: Props) {
   const [isPending, startTransition] = useTransition();
   const [showPayment, setShowPayment] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -62,7 +64,14 @@ export default function JobControls({ jobId, currentStatus, totalAmount, amountP
       <div className="flex flex-wrap items-center gap-3">
         {/* Print */}
         <button
-          onClick={() => window.print()}
+          onClick={() => {
+            const originalTitle = document.title;
+            const safeClientName = clientName.replace(/[^a-zA-Z0-9 -]/g, '').trim();
+            const prefix = currentStatus === 'PENDING' || currentStatus === 'QUOTED' ? 'QUOTE' : 'INVOICE';
+            document.title = `${prefix}${quoteNumber} ${safeClientName}`;
+            window.print();
+            setTimeout(() => { document.title = originalTitle; }, 1000);
+          }}
           className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-[0_0_15px_rgba(139,92,246,0.4)]"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
