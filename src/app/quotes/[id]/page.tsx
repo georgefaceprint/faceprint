@@ -160,7 +160,7 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ id
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 space-y-1 text-[10px] text-gray-400 leading-relaxed max-w-2xl mx-auto opacity-80 print:opacity-100 print:text-gray-700">
+        <div className="text-center mt-12 space-y-1 text-[12px] text-gray-400 leading-relaxed max-w-2xl mx-auto opacity-80 print:opacity-100 print:text-gray-700">
           <p>Pullup Print (PTY) Ltd Ta FacePrint ICK 2010/103007/23 | 5 BEACON STREET, MABONENG | NEW DOORFONTEIN,</p>
           <p>WEBSITE: www.faceprint.co.za | E-MAIL: sales@faceprint.co.za | TEL: 081 393 6500 | TEL: 078 599 9702 | CELL: 079 236 0090</p>
           <p>Full payment requirement for all orders placed unless otherwise stated. 12 Hr speed service available.</p>

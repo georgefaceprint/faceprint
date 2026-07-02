@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   totalLabel: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 },
   totalValue: { fontSize: 12 },
   totalValueBold: { fontSize: 14, fontWeight: 'bold' },
-  footer: { position: 'absolute', bottom: 30, left: 40, right: 40, textAlign: 'center', fontSize: 8, color: '#666', lineHeight: 1.5 },
+  footer: { position: 'absolute', bottom: 30, left: 40, right: 40, textAlign: 'center', fontSize: 10, color: '#666', lineHeight: 1.5 },
   footerBold: { fontWeight: 'bold' },
   footerRed: { color: '#e11d48', fontWeight: 'bold', fontStyle: 'italic', marginVertical: 5 }
 });
