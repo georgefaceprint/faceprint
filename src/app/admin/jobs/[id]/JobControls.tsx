@@ -67,7 +67,11 @@ export default function JobControls({ jobId, currentStatus, totalAmount, amountP
           onClick={() => {
             const originalTitle = document.title;
             const safeClientName = clientName.replace(/[^a-zA-Z0-9 -]/g, '').trim();
-            const prefix = currentStatus === 'PENDING' || currentStatus === 'QUOTED' ? 'QUOTE' : 'INVOICE';
+            
+            let prefix = 'QUOTE';
+            if (currentStatus === 'IN_PRODUCTION') prefix = 'PROFORMA';
+            else if (currentStatus === 'COMPLETED' || currentStatus === 'DELIVERED' || currentStatus === 'INVOICED' as any) prefix = 'INV';
+
             document.title = `${prefix}${quoteNumber} ${safeClientName}`;
             window.print();
             setTimeout(() => { document.title = originalTitle; }, 1000);

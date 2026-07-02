@@ -112,7 +112,11 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
                 </p>
                 <div className="mt-5 space-y-0.5">
                   <p className="text-sm font-black uppercase tracking-wide">
-                    Quote Number {quoteNumber}
+                    {job.status === 'PENDING' || job.status === 'QUOTED' 
+                      ? 'Quote' 
+                      : job.status === 'IN_PRODUCTION' 
+                        ? 'Proforma Invoice' 
+                        : 'Tax Invoice'} Number {quoteNumber}
                   </p>
                   <p className="text-sm font-bold italic text-red-600">
                     Quoted by {job.salesRep ? `${job.salesRep.firstName || ''} ${job.salesRep.lastName || ''}`.trim() : 'ADMIN'} ({quotedDate})
