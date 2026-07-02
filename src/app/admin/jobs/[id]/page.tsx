@@ -98,7 +98,7 @@ export default async function QuoteViewer({ params }: { params: Promise<{ id: st
         />
 
         {/* ─── Printable Quote Document ─── */}
-        <div className="bg-white text-black rounded-xl shadow-2xl print:shadow-none print:rounded-none overflow-hidden print-container">
+        <div className="bg-white text-black rounded-xl shadow-2xl print:shadow-none print:rounded-none overflow-hidden print-container w-full max-w-[210mm] min-h-[297mm] mx-auto">
           <div className="p-10 md:p-14 print:p-0">
 
             {/* Header */}
