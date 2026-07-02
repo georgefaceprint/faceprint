@@ -1,5 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image, renderToBuffer } from '@react-pdf/renderer';
+import fs from 'fs';
+import path from 'path';
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica' },
@@ -17,11 +19,11 @@ const styles = StyleSheet.create({
   table: { width: '100%', marginBottom: 30 },
   tableHeader: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#ccc', borderTopWidth: 1, borderTopColor: '#ccc', borderStyle: 'dashed', paddingVertical: 8 },
   tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#eee', borderStyle: 'dashed', paddingVertical: 8 },
-  col1: { width: '40%', fontSize: 10, fontWeight: 'bold', paddingRight: 5 },
-  col2: { width: '10%', fontSize: 10, textAlign: 'center' },
-  col3: { width: '15%', fontSize: 10, textAlign: 'right' },
+  col1: { width: '22%', fontSize: 10, fontWeight: 'bold', paddingRight: 5 },
+  col2: { width: '8%', fontSize: 10, textAlign: 'center' },
+  col3: { width: '13%', fontSize: 10, textAlign: 'right' },
   col4: { width: '15%', fontSize: 10, textAlign: 'right', fontWeight: 'bold' },
-  col5: { width: '20%', fontSize: 9, color: '#666', paddingLeft: 10 },
+  col5: { width: '42%', fontSize: 9, color: '#666', paddingLeft: 10 },
   totals: { borderTopWidth: 1, borderTopColor: '#ccc', borderBottomWidth: 1, borderBottomColor: '#ccc', borderStyle: 'dashed', paddingVertical: 10, flexDirection: 'row', justifyContent: 'flex-end', gap: 20 },
   totalBox: { flexDirection: 'column' },
   totalLabel: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 },
@@ -44,13 +46,21 @@ const QuoteDocument = ({ job }: { job: any }) => {
   const tax = afterDiscount * 0.15;
   const total = afterDiscount + tax;
 
+  let logoSrc = '/landscape-logo-v2.png';
+  try {
+    const logoPath = path.join(process.cwd(), 'public', 'landscape-logo-v2.png');
+    const buffer = fs.readFileSync(logoPath);
+    logoSrc = `data:image/png;base64,${buffer.toString('base64')}`;
+  } catch (e) {
+    console.error('Could not load logo for PDF:', e);
+  }
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Image src="/landscape-logo-v2.png" style={styles.logo} />
-            <Text style={styles.title}>FacePrint Quote</Text>
+            <Image src={logoSrc} style={styles.logo} />
             <Text style={styles.vat}>VAT Number 4060259753</Text>
             <Text style={styles.quoteNo}>QUOTE NUMBER {quoteNumber}</Text>
             <Text style={styles.salesRep}>QUOTED BY {job.salesRepId || 'ADMIN'} ({quotedDate})</Text>
