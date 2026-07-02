@@ -170,13 +170,12 @@ export default function QuoteBuilder({
         </div>
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
-            Internal Job Description *
+            Internal Job Description (Optional)
           </label>
           <input
             type="text"
             value={jobDescription}
             onChange={e => setJobDescription(e.target.value)}
-            required
             placeholder="e.g. 5x Pullup Banners for Expo"
             className="w-full bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
           />
