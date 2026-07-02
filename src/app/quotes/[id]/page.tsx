@@ -31,31 +31,31 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ id
   const isQuote = job.status === 'PENDING' || job.status === 'QUOTED';
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-gray-200 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#0B0F19] text-gray-200 pt-16 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         
         {/* Header/Logo */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-10">
           <Link href="/">
-            <img src="/landscape-logo-v2.png" alt="FacePrint" className="w-[300px] object-contain" />
+            <img src="/landscape-logo-v2.png" alt="FacePrint" className="w-[260px] object-contain" />
           </Link>
           <div className="text-right">
-            <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
-              {isQuote ? 'Quote' : 'Invoice'}
+            <h1 className="text-3xl font-black text-white uppercase tracking-wider">
+              {isQuote ? 'Quote' : job.status === 'IN_PRODUCTION' ? 'Proforma Invoice' : 'Tax Invoice'}
             </h1>
-            <p className="text-purple-400 font-mono mt-1">#{job.jobNumber || job.id.split('-')[0].toUpperCase()}</p>
+            <p className="text-purple-400 font-mono mt-1 font-bold">#{job.jobNumber || job.id.split('-')[0].toUpperCase()}</p>
           </div>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl border border-[rgba(255,255,255,0.1)] shadow-2xl relative overflow-hidden">
+        <div className="glass-panel p-8 md:p-12 rounded-3xl border border-[rgba(255,255,255,0.08)] shadow-2xl relative overflow-hidden bg-[rgba(20,25,35,0.6)] backdrop-blur-xl">
           {/* Decorative gradients */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
           <div className="relative z-10">
             {/* Status Badge */}
-            <div className="mb-8">
-              <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
+            <div className="mb-10">
+              <span className={`px-4 py-1.5 text-xs font-bold rounded-full border tracking-widest uppercase shadow-sm ${
                 job.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
                 job.status === 'QUOTED' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                 job.status === 'IN_PRODUCTION' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
@@ -66,56 +66,65 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ id
             </div>
 
             {/* Client & Company Info */}
-            <div className="grid grid-cols-2 gap-8 mb-12">
+            <div className="grid grid-cols-2 gap-8 mb-10">
               <div>
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Prepared For</h3>
+                <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Prepared For</h3>
                 <div className="space-y-1">
-                  <p className="font-bold text-white text-lg">{job.client?.companyName || job.client?.contactName}</p>
-                  {job.client?.companyName && <p className="text-gray-400">{job.client?.contactName}</p>}
-                  <p className="text-gray-400">{job.client?.email}</p>
-                  {job.client?.phone && <p className="text-gray-400">{job.client?.phone}</p>}
+                  <p className="font-bold text-white text-xl tracking-wide">{job.client?.companyName || job.client?.contactName}</p>
+                  {job.client?.companyName && <p className="text-gray-400 text-sm">{job.client?.contactName}</p>}
+                  <p className="text-gray-400 text-sm mt-2">{job.client?.email}</p>
+                  {job.client?.phone && <p className="text-gray-400 text-sm">{job.client?.phone}</p>}
                 </div>
               </div>
 
               <div className="text-right">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Prepared By</h3>
+                <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">Prepared By</h3>
                 <div className="space-y-1">
-                  <p className="font-bold text-white text-lg">FacePrint</p>
-                  <p className="text-gray-400">sales@faceprint.co.za</p>
-                  <p className="text-gray-400">011 026 1506</p>
-                  <p className="text-gray-400">105 10th Ave, Edenvale</p>
+                  <p className="font-bold text-white text-xl tracking-wide">FacePrint</p>
+                  <p className="text-gray-400 text-sm">sales@faceprint.co.za</p>
+                  <p className="text-gray-400 text-sm">011 026 1506</p>
+                  <p className="text-gray-400 text-sm">105 10th Ave, Edenvale</p>
                 </div>
               </div>
             </div>
 
             {/* Description */}
             {job.description && (
-              <div className="mb-8 bg-[rgba(255,255,255,0.02)] p-4 rounded-xl border border-[rgba(255,255,255,0.05)]">
-                <p className="text-sm text-gray-300">{job.description}</p>
+              <div className="mb-10 bg-[rgba(255,255,255,0.03)] p-5 rounded-xl border border-[rgba(255,255,255,0.05)] shadow-inner">
+                <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Project Notes</h3>
+                <p className="text-sm text-gray-300 leading-relaxed font-medium">{job.description}</p>
               </div>
             )}
 
             {/* Line Items */}
-            <div className="mb-8">
+            <div className="mb-10">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-[rgba(255,255,255,0.1)] text-left">
-                      <th className="py-3 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Description</th>
-                      <th className="py-3 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Qty</th>
-                      <th className="py-3 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Unit Price</th>
-                      <th className="py-3 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Total</th>
+                    <tr className="border-b-2 border-[rgba(255,255,255,0.1)] text-left">
+                      <th className="pb-3 px-2 text-xs font-black text-gray-500 uppercase tracking-widest w-3/5">Product & Description</th>
+                      <th className="pb-3 px-2 text-xs font-black text-gray-500 uppercase tracking-widest text-center">Qty</th>
+                      <th className="pb-3 px-2 text-xs font-black text-gray-500 uppercase tracking-widest text-right">Unit Price</th>
+                      <th className="pb-3 px-2 text-xs font-black text-gray-500 uppercase tracking-widest text-right">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
-                    {job.items.map((item) => (
-                      <tr key={item.id} className="text-sm">
-                        <td className="py-4 px-2 text-white font-medium">{item.description}</td>
-                        <td className="py-4 px-2 text-gray-300 text-right">{item.quantity}</td>
-                        <td className="py-4 px-2 text-gray-300 text-right">R {item.unitPrice.toFixed(2)}</td>
-                        <td className="py-4 px-2 text-white font-bold text-right">R {item.totalPrice.toFixed(2)}</td>
-                      </tr>
-                    ))}
+                    {job.items.map((item) => {
+                      const parts = item.description.split(' - ');
+                      const productName = parts[0];
+                      const desc = parts.slice(1).join(' - ');
+                      return (
+                        <tr key={item.id} className="text-sm group hover:bg-[rgba(255,255,255,0.01)] transition-colors">
+                          <td className="py-5 px-2">
+                            <div className="text-white font-bold text-base mb-1 tracking-wide">{productName}</div>
+                            {desc && <div className="text-gray-400 text-xs leading-relaxed max-w-md">{desc}</div>}
+                          </td>
+                          <td className="py-5 px-2 text-gray-300 text-center font-mono">{item.quantity}</td>
+                          <td className="py-5 px-2 text-gray-300 text-right font-mono">R {item.unitPrice.toFixed(2)}</td>
+                          <td className="py-5 px-2 text-white font-bold text-right font-mono">R {item.totalPrice.toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
