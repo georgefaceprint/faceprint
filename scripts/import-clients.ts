@@ -39,9 +39,13 @@ async function main() {
   let count = 0;
   let skipped = 0;
 
+  const emailMap = new Map<string, string>(); // tracking email -> legacyId
+  const upserts = [];
+  
   for (const client of clients) {
-    // Basic mapping
     const legacyId = client.ID?.toString();
+    if (!legacyId) continue;
+    
     const companyName = client.CNN || '';
     const contactName = client.CP || client.CNN || 'Unknown';
     let email = client.EM || '';
@@ -50,19 +54,24 @@ async function main() {
     const city = client.TWN || '';
     const state = client.PRO || '';
     
-    // Cleanup email - must be valid and unique, or we generate a placeholder if missing
     email = email.trim().toLowerCase();
     if (!email || !email.includes('@')) {
-      email = `client_${legacyId || Date.now()}@no-email.faceprint.co.za`;
+      email = `client_${legacyId}@no-email.faceprint.co.za`;
     }
 
-    try {
-      await prisma.client.upsert({
-        where: { email }, // using email as unique constraint
+    if (emailMap.has(email) && emailMap.get(email) !== legacyId) {
+       const parts = email.split('@');
+       email = `${parts[0]}+${legacyId}@${parts[1]}`;
+    }
+    emailMap.set(email, legacyId);
+
+    upserts.push(
+      prisma.client.upsert({
+        where: { legacyId }, 
         update: {
-          legacyId,
           companyName,
           contactName,
+          email,
           phone,
           addressLine1,
           city,
@@ -78,15 +87,22 @@ async function main() {
           city,
           state,
         }
-      });
-      count++;
-      if (count % 100 === 0) {
-        console.log(`Imported ${count} clients...`);
-      }
-    } catch (err: any) {
-      // Might fail on duplicate legacyId if data is dirty, let's just warn
-      skipped++;
-    }
+      })
+    );
+  }
+
+  // Execute in chunks
+  const chunkSize = 100;
+  for (let i = 0; i < upserts.length; i += chunkSize) {
+     const chunk = upserts.slice(i, i + chunkSize);
+     try {
+       await Promise.all(chunk);
+       count += chunk.length;
+       console.log(`Imported ${count} clients...`);
+     } catch (err: any) {
+       console.error(`Error in chunk ${i} - ${i + chunkSize}:`, err.message);
+       skipped += chunk.length;
+     }
   }
 
   console.log(`\nImport complete!`);

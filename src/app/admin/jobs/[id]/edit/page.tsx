@@ -6,19 +6,42 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export default async function EditQuotePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  
-  const [job, products] = await Promise.all([
-    prisma.job.findUnique({
-      where: { id },
-      include: { client: true, items: true },
-    }),
-    prisma.product.findMany({
-      take: 2000,
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true, basePrice: true, description: true },
-    })
-  ]);
+  let job;
+  let paramsData;
+  let products;
+
+  try {
+    paramsData = await params;
+    
+    [job, products] = await Promise.all([
+      prisma.job.findFirst({
+        where: { 
+          OR: [
+            { id: paramsData.id },
+            { jobNumber: paramsData.id },
+            { legacyId: paramsData.id },
+            { id: `legacy-${paramsData.id}` }
+          ]
+        },
+        include: {
+          client: true,
+          items: true,
+        }
+      }),
+      prisma.product.findMany({
+        take: 2000,
+        orderBy: { name: 'asc' },
+        select: { id: true, name: true, basePrice: true, description: true },
+      })
+    ]);
+  } catch (err: any) {
+    if (err.message && err.message.includes('NEXT_HTTP_ERROR_FALLBACK')) throw err;
+    return (
+      <div className="p-8 text-red-500 bg-red-100 rounded">
+        Error loading job: {err.message}
+      </div>
+    );
+  }
 
   if (!job) notFound();
 

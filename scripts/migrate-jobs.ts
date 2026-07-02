@@ -1,10 +1,10 @@
+require('dotenv').config();
 import fs from 'fs';
 import { PrismaClient, JobStatus } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-// Local Prisma dev server URL
-const connectionString = 'postgres://postgres:postgres@localhost:51214/template1?sslmode=disable';
+const connectionString = process.env.DATABASE_URL as string;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 

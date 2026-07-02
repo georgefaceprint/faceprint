@@ -8,8 +8,15 @@ export const dynamic = 'force-dynamic';
 export default async function PublicQuotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  const job = await prisma.job.findUnique({
-    where: { id },
+  const job = await prisma.job.findFirst({
+    where: {
+      OR: [
+        { id },
+        { jobNumber: id },
+        { legacyId: id },
+        { id: `legacy-${id}` }
+      ]
+    },
     include: {
       client: true,
       items: true,
@@ -20,17 +27,17 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ id
     notFound();
   }
 
-  // A Job without PENDING is technically not just a quote, but we can show it anyway.
-  const isQuote = job.status === 'PENDING';
+  // A Job without PENDING or QUOTED is technically not just a quote, but we can show it anyway.
+  const isQuote = job.status === 'PENDING' || job.status === 'QUOTED';
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-gray-200 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#0B0F19] text-gray-200 pt-28 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         
         {/* Header/Logo */}
         <div className="flex justify-between items-center mb-8">
           <Link href="/">
-            <img src="/images/faceprint_logo.png" alt="FacePrint" className="h-10" />
+            <img src="/landscape-logo-v2.png" alt="FacePrint" className="w-[300px] object-contain" />
           </Link>
           <div className="text-right">
             <h1 className="text-3xl font-bold text-white uppercase tracking-wider">
@@ -63,10 +70,10 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ id
               <div>
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Prepared For</h3>
                 <div className="space-y-1">
-                  <p className="font-bold text-white text-lg">{job.client.companyName || job.client.contactName}</p>
-                  {job.client.companyName && <p className="text-gray-400">{job.client.contactName}</p>}
-                  <p className="text-gray-400">{job.client.email}</p>
-                  {job.client.phone && <p className="text-gray-400">{job.client.phone}</p>}
+                  <p className="font-bold text-white text-lg">{job.client?.companyName || job.client?.contactName}</p>
+                  {job.client?.companyName && <p className="text-gray-400">{job.client?.contactName}</p>}
+                  <p className="text-gray-400">{job.client?.email}</p>
+                  {job.client?.phone && <p className="text-gray-400">{job.client?.phone}</p>}
                 </div>
               </div>
 

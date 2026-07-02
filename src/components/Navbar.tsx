@@ -1,17 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  // Hide the public Navbar in the ERP
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
-    <header className="glass-panel fixed top-0 w-full z-50 rounded-none border-t-0 border-x-0">
+    <header className="glass-panel fixed top-0 w-full z-50 rounded-none border-t-0 border-x-0 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Image 
             src="/logo-full.png" 
             alt="FacePrint Logo" 
-            width={180} 
-            height={50} 
-            className="object-contain"
+            width={40} 
+            height={40} 
+            className="object-contain rounded-full"
             priority
           />
         </Link>

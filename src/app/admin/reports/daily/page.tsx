@@ -18,26 +18,60 @@ const STATUS_BADGE: Record<string, { bg: string; text: string }> = {
 export default async function DailyReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string, range?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const session = await auth();
 
-  // Default to today, allow overriding via ?date=YYYY-MM-DD
-  const targetDateStr = resolvedSearchParams?.date || new Date().toISOString().split('T')[0];
-  const targetDate = new Date(targetDateStr);
-  targetDate.setHours(0, 0, 0, 0);
-  const nextDay = new Date(targetDate);
-  nextDay.setDate(nextDay.getDate() + 1);
+  // Date range logic
+  const now = new Date();
+  let startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
+  let endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 1);
+
+  const range = resolvedSearchParams?.range || 'today';
+  let displayTitle = 'Daily Report';
+
+  if (range === 'yesterday') {
+    startDate.setDate(startDate.getDate() - 1);
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    displayTitle = 'Yesterday\'s Report';
+  } else if (range === 'this_week') {
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is sunday
+    startDate.setDate(diff);
+    endDate = new Date();
+    endDate.setDate(endDate.getDate() + 1);
+    displayTitle = 'This Week\'s Report';
+  } else if (range === 'last_week') {
+    const day = startDate.getDay();
+    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1) - 7;
+    startDate.setDate(diff);
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7);
+    displayTitle = 'Last Week\'s Report';
+  } else if (range === 'this_month') {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    displayTitle = 'This Month\'s Report';
+  } else if (resolvedSearchParams?.date) {
+    startDate = new Date(resolvedSearchParams.date);
+    startDate.setHours(0, 0, 0, 0);
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 1);
+    displayTitle = `Report for ${startDate.toLocaleDateString('en-ZA')}`;
+  }
 
   const jobs = await prisma.job.findMany({
     where: {
       createdAt: {
-        gte: targetDate,
-        lt: nextDay,
+        gte: startDate,
+        lt: endDate,
       },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: 'desc' },
     include: {
       client: { select: { companyName: true, contactName: true } },
       items: { select: { quantity: true, unitPrice: true } },
@@ -51,70 +85,53 @@ export default async function DailyReportPage({
   const cancelledJobs = jobs.filter(j => j.status === 'CANCELLED');
   const activeJobs    = jobs.filter(j => j.status !== 'CANCELLED');
 
-  // Format date nicely
-  const displayDate = targetDate.toLocaleDateString('en-ZA', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  });
-
-  // Date nav helpers
-  const prevDate = new Date(targetDate);
-  prevDate.setDate(prevDate.getDate() - 1);
-  const nextDate = new Date(targetDate);
-  nextDate.setDate(nextDate.getDate() + 1);
-  const isToday = targetDateStr === new Date().toISOString().split('T')[0];
-
   return (
     <div className="space-y-6 animate-fade-in pb-16">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold text-white">Daily Report</h2>
-          <p className="text-gray-400 mt-1">{displayDate}</p>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-white">{displayTitle}</h2>
+            <p className="text-gray-400 mt-1">
+              {startDate.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })} 
+              {range !== 'today' && range !== 'yesterday' && !resolvedSearchParams?.date && ` - ${new Date(endDate.getTime() - 1).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}`}
+            </p>
+          </div>
+          <DailyPrintButton />
         </div>
 
-        {/* Date navigation */}
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/admin/reports/daily?date=${prevDate.toISOString().split('T')[0]}`}
-            className="glass-panel border border-[rgba(255,255,255,0.1)] px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+        {/* Date Filters */}
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          <Link href="/admin/reports/daily?range=today" className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${range === 'today' && !resolvedSearchParams?.date ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)] hover:text-white'}`}>
+            Today
           </Link>
+          <Link href="/admin/reports/daily?range=yesterday" className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${range === 'yesterday' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)] hover:text-white'}`}>
+            Yesterday
+          </Link>
+          <Link href="/admin/reports/daily?range=this_week" className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${range === 'this_week' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)] hover:text-white'}`}>
+            This Week
+          </Link>
+          <Link href="/admin/reports/daily?range=last_week" className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${range === 'last_week' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)] hover:text-white'}`}>
+            Last Week
+          </Link>
+          <Link href="/admin/reports/daily?range=this_month" className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${range === 'this_month' ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)] hover:text-white'}`}>
+            This Month
+          </Link>
+          
+          <div className="h-6 w-px bg-[rgba(255,255,255,0.1)] mx-2"></div>
 
           <form method="GET" action="/admin/reports/daily" className="flex items-center gap-2">
             <input
               type="date"
               name="date"
-              defaultValue={targetDateStr}
-              className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+              defaultValue={resolvedSearchParams?.date || ''}
+              className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.1)] rounded-xl px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
             />
-            <button type="submit" className="glass-panel border border-[rgba(255,255,255,0.1)] px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all">
-              Go
+            <button type="submit" className="glass-panel border border-[rgba(255,255,255,0.1)] px-3 py-1.5 rounded-xl text-gray-300 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all text-sm">
+              Custom Date
             </button>
           </form>
-
-          {!isToday && (
-            <Link
-              href={`/admin/reports/daily?date=${nextDate.toISOString().split('T')[0]}`}
-              className="glass-panel border border-[rgba(255,255,255,0.1)] px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-[rgba(255,255,255,0.08)] transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          )}
-
-          {!isToday && (
-            <Link
-              href="/admin/reports/daily"
-              className="text-sm text-purple-400 hover:text-purple-300 px-3 py-2 rounded-xl hover:bg-purple-500/10 transition-all whitespace-nowrap"
-            >
-              Today
-            </Link>
-          )}
         </div>
       </div>
 
@@ -183,7 +200,9 @@ export default async function DailyReportPage({
                           {new Date(job.createdAt).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}
                         </td>
                         <td className="px-6 py-4 font-mono text-xs text-gray-400 whitespace-nowrap">
-                          {job.jobNumber || job.id.substring(0, 8).toUpperCase()}
+                          <a href={`/admin/jobs/${job.jobNumber || job.id}`} className="hover:text-purple-400 hover:underline transition-colors font-bold">
+                            {job.jobNumber || `LEGACY-${job.legacyId}`}
+                          </a>
                         </td>
                         <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                           {job.client.companyName || job.client.contactName}
@@ -204,7 +223,7 @@ export default async function DailyReportPage({
                         </td>
                         <td className="px-6 py-4 text-right font-mono whitespace-nowrap">
                           <Link
-                            href={`/admin/jobs/${job.id}`}
+                            href={`/admin/jobs/${job.jobNumber || job.id}`}
                             className={`hover:underline ${job.balance > 0 ? 'text-orange-400' : 'text-green-400'}`}
                           >
                             {job.balance > 0

@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import { sendEmail } from '@/lib/email';
+import { generateQuotePdf } from '@/lib/pdf';
 
 export async function createQuote(formData: FormData) {
   const session = await auth();
@@ -48,8 +50,8 @@ export async function createQuote(formData: FormData) {
   const job = await prisma.job.create({
     data: {
       jobNumber: quoteNumber,
-      status: 'PENDING',
-      salesRepId: session.user.name || 'System',
+      status: 'QUOTED',
+      salesRepId: (session.user as any).id || undefined,
       description,
       totalAmount,
       balance: totalAmount,
@@ -64,6 +66,7 @@ export async function createQuote(formData: FormData) {
         })),
       },
     },
+    include: { client: true }
   });
 
   const requestId = formData.get('requestId') as string | null;

@@ -36,7 +36,7 @@ export default async function JobsBoard({
   const deliveredJobs = jobs.filter(j => j.status === 'DELIVERED' || j.status === 'COMPLETED');
 
   const JobCard = ({ job }: { job: any }) => (
-    <Link href={`/admin/jobs/${job.id}`} className="block bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl p-4 mb-3 hover:bg-[rgba(255,255,255,0.06)] transition-all cursor-pointer group">
+    <Link href={`/admin/jobs/${job.jobNumber || job.id}`} className="block bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-xl p-4 mb-3 hover:bg-[rgba(255,255,255,0.06)] transition-all cursor-pointer group">
       <div className="flex justify-between items-start mb-2">
         <span className="text-xs font-mono text-gray-500">#{job.jobNumber || job.id.substring(0, 8)}</span>
         <span className="text-xs font-semibold text-white bg-[rgba(255,255,255,0.1)] px-2 py-1 rounded">R {job.totalAmount.toLocaleString()}</span>

@@ -223,7 +223,13 @@ export default function QuoteBuilder({
                 if (matched) {
                   updateItem(item.id, 'unitCost', matched.basePrice);
                   if (matched.description) {
-                    updateItem(item.id, 'description', matched.description);
+                    const cleanDesc = matched.description
+                      .replace(/<[^>]*>?/gm, ' ')
+                      .replace(/&nbsp;/g, ' ')
+                      .replace(/&amp;/g, '&')
+                      .replace(/\s+/g, ' ')
+                      .trim();
+                    updateItem(item.id, 'description', cleanDesc);
                   }
                 }
               }}
@@ -279,8 +285,8 @@ export default function QuoteBuilder({
         ))}
 
         <datalist id="products-list">
-          {products.map(p => (
-            <option key={p.id} value={p.name} />
+          {Array.from(new Set(products.map(p => p.name.trim()))).map(name => (
+            <option key={name} value={name} />
           ))}
         </datalist>
       </div>
